@@ -1,0 +1,50 @@
+name: PlumbingQuoteApp
+options:
+  createIntermediateGroups: true
+settings:
+  base:
+    PRODUCT_NAME: PlumbingQuoteApp
+    SWIFT_VERSION: 5.0
+    CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: ""
+packages:
+  Supabase:
+    url: https://github.com/supabase/supabase-swift
+    from: 2.0.0
+targets:
+  PlumbingQuoteApp:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: PlumbingQuoteApp
+        excludes:
+          - Info.plist
+    info:
+      path: PlumbingQuoteApp/Info.plist
+      properties:
+        NSCameraUsageDescription: PlumbQuote needs camera access to photograph plumbing issues for accurate quotes.
+        NSMicrophoneUsageDescription: PlumbQuote needs microphone access so you can describe plumbing issues by voice.
+        NSSpeechRecognitionUsageDescription: PlumbQuote uses speech recognition to convert your voice description to text for generating quotes.
+        NSPhotoLibraryUsageDescription: PlumbQuote needs photo library access to select existing photos of plumbing issues.
+        SUPABASE_URL: $(SUPABASE_URL)
+        SUPABASE_ANON_KEY: $(SUPABASE_ANON_KEY)
+    dependencies:
+      - package: Supabase
+        product: Supabase
+    settings:
+      configFiles:
+        Debug: Config/Debug.xcconfig
+        Release: Config/Release.xcconfig
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.hometitan.plumbquote
+        INFOPLIST_FILE: PlumbingQuoteApp/Info.plist
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        GENERATE_INFOPLIST_FILE: NO
+        CURRENT_PROJECT_VERSION: 1
+        MARKETING_VERSION: 1.0
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SUPPORTS_MACCATALYST: NO
+        SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
+        SWIFT_EMIT_LOC_STRINGS: YES

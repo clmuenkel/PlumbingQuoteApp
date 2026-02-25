@@ -1,0 +1,53 @@
+{
+  "login_status": 200,
+  "auth_check": {
+    "status": 400,
+    "code": "image_required"
+  },
+  "analyze_status": 200,
+  "analyze_code": null,
+  "estimate_id_present": true,
+  "option_ids_present": {
+    "good": true,
+    "better": true,
+    "best": true
+  },
+  "transition_checks": {
+    "draft_to_accepted": {
+      "status": 409,
+      "code": "invalid_status_transition"
+    },
+    "draft_to_sent": {
+      "status": 200,
+      "code": null
+    },
+    "sent_to_accepted": {
+      "status": 200,
+      "code": null
+    },
+    "accepted_to_rejected": {
+      "status": 409,
+      "code": "invalid_status_transition"
+    }
+  },
+  "totals_check": {
+    "status": 200,
+    "total": 298,
+    "subtotal_input": 100.0,
+    "total_differs_from_subtotal": true
+  },
+  "analytics": {
+    "status": 200,
+    "rows": 1,
+    "sample_keys": [
+      "quote_date",
+      "total_quotes",
+      "accepted",
+      "sent",
+      "rejected",
+      "avg_quote_value",
+      "accepted_revenue"
+    ],
+    "error_code": null
+  }
+}

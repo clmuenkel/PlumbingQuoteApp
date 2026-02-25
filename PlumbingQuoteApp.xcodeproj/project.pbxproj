@@ -1,0 +1,482 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0E45ECD0DC7E772CA47AAB59 /* EstimateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FB35244CE8D8DDC6F73464E /* EstimateService.swift */; };
+		10AE183FCF6C8A507285C90D /* AnalyticsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99CBCA5E001002B4BAB4D915 /* AnalyticsViewModel.swift */; };
+		1EF4D50567765778A51F82AA /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFEC095465D3C653ADD10B /* LoginView.swift */; };
+		21BF09CEE568D74B74E4693E /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = B343FE90D7722A013B4F39F3 /* Config.swift */; };
+		279AEB3BCEF1E2789B052333 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A7BC8D11011516E12164CA /* NetworkMonitor.swift */; };
+		325B9E998D33A286EB0BFCEC /* HistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA342AB9B6CCFD2C4F1969AE /* HistoryViewModel.swift */; };
+		5DC47949A45FFE3AB991475C /* QuoteResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73DFF3A98CDDD05F09CB3273 /* QuoteResultView.swift */; };
+		5ECC5BC00AF31F231760C9EE /* ErrorLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3C8A2F6B2336A6B5DE24FF /* ErrorLogger.swift */; };
+		60A149A920E0EE7064E657E8 /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5473F917167A58CC3E552EC5 /* MenuView.swift */; };
+		61BEEDB5EF6159B59C43346D /* QuoteHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F099798BFDBFEE0E03746EA0 /* QuoteHistoryView.swift */; };
+		6BFC5E8285BF9E616696C237 /* SignaturePadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C760C45C641A433E6BF741 /* SignaturePadView.swift */; };
+		775D2D9A47AC7D14232A6707 /* QuoteEditViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E5FF5EE25EA458521D8662C /* QuoteEditViewModel.swift */; };
+		785F1AC534C41CBB1B007276 /* PlumbingQuoteAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACD5F17BB2E20313999B835 /* PlumbingQuoteAppApp.swift */; };
+		792DEF3B51E580815DF632D1 /* PDFQuoteRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EB8955C6734B9E61BC78F5F /* PDFQuoteRenderer.swift */; };
+		81001516564AB62603688449 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 633BE8F449ACA410DC804783 /* HomeView.swift */; };
+		8391A68FBEBC47BA77B2A287 /* QuoteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16C5334CBD0C6B6515FBF8A7 /* QuoteViewModel.swift */; };
+		856F6DCC95E67735AD66AFF2 /* CompanySettingsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52B46A2656A1BDDE1457360 /* CompanySettingsService.swift */; };
+		90934CC84B34AE5AC539A4E3 /* AIQuoteService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8B22A6A881C7DA30AF48DD /* AIQuoteService.swift */; };
+		AF916FD78E2E2E7E172E11EC /* MultiImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A684F6006CFBA162CA4F3A2 /* MultiImagePicker.swift */; };
+		B7562A2B813A3666342BD47B /* CameraService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 732E9140AAAD97097EB2DC77 /* CameraService.swift */; };
+		BBDDCF4B6639182ED2FF0C28 /* QuoteEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89649647F92F041AFD5DCA6D /* QuoteEditView.swift */; };
+		C9340ED5447426F903EDAC8B /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = C08944FE33B240A01C28EEE8 /* Supabase */; };
+		C9C4CBC0AA2651B2623F90D6 /* HapticsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 911BA7CFE0545FB0392F407C /* HapticsService.swift */; };
+		CC414B9C8C91D953A1B292A4 /* VoiceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47384DC96F9F7BD24BA0E102 /* VoiceService.swift */; };
+		E4BCBC0007CC78BD3E4EBB3C /* SupabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCBD7F66E7019E28D04204C4 /* SupabaseService.swift */; };
+		E9EB178BBE59472C5362E170 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0907F052D7501F3120FF26DB /* Models.swift */; };
+		F1B31438A6EE51EBF1ACEF7C /* AnalyticsDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E0462F5CD7072C5498D8AC /* AnalyticsDashboardView.swift */; };
+		F81933C3CC72B608BB7D5141 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EB9F8BEBA2685F7EE511C8 /* AuthViewModel.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0907F052D7501F3120FF26DB /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		0ACD5F17BB2E20313999B835 /* PlumbingQuoteAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlumbingQuoteAppApp.swift; sourceTree = "<group>"; };
+		16C5334CBD0C6B6515FBF8A7 /* QuoteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuoteViewModel.swift; sourceTree = "<group>"; };
+		2D8B22A6A881C7DA30AF48DD /* AIQuoteService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIQuoteService.swift; sourceTree = "<group>"; };
+		3FB35244CE8D8DDC6F73464E /* EstimateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EstimateService.swift; sourceTree = "<group>"; };
+		47384DC96F9F7BD24BA0E102 /* VoiceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceService.swift; sourceTree = "<group>"; };
+		51EB9F8BEBA2685F7EE511C8 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
+		5473F917167A58CC3E552EC5 /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
+		633BE8F449ACA410DC804783 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		63C760C45C641A433E6BF741 /* SignaturePadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignaturePadView.swift; sourceTree = "<group>"; };
+		732E9140AAAD97097EB2DC77 /* CameraService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraService.swift; sourceTree = "<group>"; };
+		73DFF3A98CDDD05F09CB3273 /* QuoteResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuoteResultView.swift; sourceTree = "<group>"; };
+		7B3C8A2F6B2336A6B5DE24FF /* ErrorLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorLogger.swift; sourceTree = "<group>"; };
+		89649647F92F041AFD5DCA6D /* QuoteEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuoteEditView.swift; sourceTree = "<group>"; };
+		8A684F6006CFBA162CA4F3A2 /* MultiImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiImagePicker.swift; sourceTree = "<group>"; };
+		8E5FF5EE25EA458521D8662C /* QuoteEditViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuoteEditViewModel.swift; sourceTree = "<group>"; };
+		8EB8955C6734B9E61BC78F5F /* PDFQuoteRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFQuoteRenderer.swift; sourceTree = "<group>"; };
+		911BA7CFE0545FB0392F407C /* HapticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticsService.swift; sourceTree = "<group>"; };
+		99CBCA5E001002B4BAB4D915 /* AnalyticsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsViewModel.swift; sourceTree = "<group>"; };
+		A52B46A2656A1BDDE1457360 /* CompanySettingsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanySettingsService.swift; sourceTree = "<group>"; };
+		A9A7BC8D11011516E12164CA /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
+		B343FE90D7722A013B4F39F3 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
+		BA342AB9B6CCFD2C4F1969AE /* HistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewModel.swift; sourceTree = "<group>"; };
+		C01DA9F6EA8CA28CC36E8AA2 /* PlumbingQuoteApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PlumbingQuoteApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D5BFEC095465D3C653ADD10B /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		E2E0462F5CD7072C5498D8AC /* AnalyticsDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsDashboardView.swift; sourceTree = "<group>"; };
+		F099798BFDBFEE0E03746EA0 /* QuoteHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuoteHistoryView.swift; sourceTree = "<group>"; };
+		FCBD7F66E7019E28D04204C4 /* SupabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseService.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D9E54539BA23FCD72D499C7E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C9340ED5447426F903EDAC8B /* Supabase in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0F63356A27B44A71B5BBF1E0 = {
+			isa = PBXGroup;
+			children = (
+				ADF9BE7B9351913B723CA89B /* PlumbingQuoteApp */,
+				84F8ECE38FF0D5678BBE83E4 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		2D0CA207E5E45DF186AE82F8 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				2D8B22A6A881C7DA30AF48DD /* AIQuoteService.swift */,
+				732E9140AAAD97097EB2DC77 /* CameraService.swift */,
+				A52B46A2656A1BDDE1457360 /* CompanySettingsService.swift */,
+				7B3C8A2F6B2336A6B5DE24FF /* ErrorLogger.swift */,
+				3FB35244CE8D8DDC6F73464E /* EstimateService.swift */,
+				911BA7CFE0545FB0392F407C /* HapticsService.swift */,
+				A9A7BC8D11011516E12164CA /* NetworkMonitor.swift */,
+				8EB8955C6734B9E61BC78F5F /* PDFQuoteRenderer.swift */,
+				FCBD7F66E7019E28D04204C4 /* SupabaseService.swift */,
+				47384DC96F9F7BD24BA0E102 /* VoiceService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		84F8ECE38FF0D5678BBE83E4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C01DA9F6EA8CA28CC36E8AA2 /* PlumbingQuoteApp.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8BD41B2ED64353655420E218 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				99CBCA5E001002B4BAB4D915 /* AnalyticsViewModel.swift */,
+				51EB9F8BEBA2685F7EE511C8 /* AuthViewModel.swift */,
+				BA342AB9B6CCFD2C4F1969AE /* HistoryViewModel.swift */,
+				8E5FF5EE25EA458521D8662C /* QuoteEditViewModel.swift */,
+				16C5334CBD0C6B6515FBF8A7 /* QuoteViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		ADF9BE7B9351913B723CA89B /* PlumbingQuoteApp */ = {
+			isa = PBXGroup;
+			children = (
+				B343FE90D7722A013B4F39F3 /* Config.swift */,
+				0ACD5F17BB2E20313999B835 /* PlumbingQuoteAppApp.swift */,
+				BDB3192A4782992446CA17D0 /* Models */,
+				2D0CA207E5E45DF186AE82F8 /* Services */,
+				8BD41B2ED64353655420E218 /* ViewModels */,
+				F1CEA99CBD69D526FD66509E /* Views */,
+			);
+			path = PlumbingQuoteApp;
+			sourceTree = "<group>";
+		};
+		BDB3192A4782992446CA17D0 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				0907F052D7501F3120FF26DB /* Models.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		E60C176A379816300A399789 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				8A684F6006CFBA162CA4F3A2 /* MultiImagePicker.swift */,
+				63C760C45C641A433E6BF741 /* SignaturePadView.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		F1CEA99CBD69D526FD66509E /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				E2E0462F5CD7072C5498D8AC /* AnalyticsDashboardView.swift */,
+				633BE8F449ACA410DC804783 /* HomeView.swift */,
+				D5BFEC095465D3C653ADD10B /* LoginView.swift */,
+				5473F917167A58CC3E552EC5 /* MenuView.swift */,
+				89649647F92F041AFD5DCA6D /* QuoteEditView.swift */,
+				F099798BFDBFEE0E03746EA0 /* QuoteHistoryView.swift */,
+				73DFF3A98CDDD05F09CB3273 /* QuoteResultView.swift */,
+				E60C176A379816300A399789 /* Components */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		29B3A7CC03891E724B9C5064 /* PlumbingQuoteApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B717EEB4186635AE90FCD1B2 /* Build configuration list for PBXNativeTarget "PlumbingQuoteApp" */;
+			buildPhases = (
+				45590C1E8FC4915985717BD5 /* Sources */,
+				D9E54539BA23FCD72D499C7E /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PlumbingQuoteApp;
+			packageProductDependencies = (
+				C08944FE33B240A01C28EEE8 /* Supabase */,
+			);
+			productName = PlumbingQuoteApp;
+			productReference = C01DA9F6EA8CA28CC36E8AA2 /* PlumbingQuoteApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		29685A4673DE1E5E05185883 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					29B3A7CC03891E724B9C5064 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = DACD4B5475D4EB2B118BF159 /* Build configuration list for PBXProject "PlumbingQuoteApp" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 0F63356A27B44A71B5BBF1E0;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				FF1CA66EA568C7CBB79A1E13 /* XCRemoteSwiftPackageReference "supabase-swift" */,
+			);
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				29B3A7CC03891E724B9C5064 /* PlumbingQuoteApp */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		45590C1E8FC4915985717BD5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				90934CC84B34AE5AC539A4E3 /* AIQuoteService.swift in Sources */,
+				F1B31438A6EE51EBF1ACEF7C /* AnalyticsDashboardView.swift in Sources */,
+				10AE183FCF6C8A507285C90D /* AnalyticsViewModel.swift in Sources */,
+				F81933C3CC72B608BB7D5141 /* AuthViewModel.swift in Sources */,
+				B7562A2B813A3666342BD47B /* CameraService.swift in Sources */,
+				856F6DCC95E67735AD66AFF2 /* CompanySettingsService.swift in Sources */,
+				21BF09CEE568D74B74E4693E /* Config.swift in Sources */,
+				5ECC5BC00AF31F231760C9EE /* ErrorLogger.swift in Sources */,
+				0E45ECD0DC7E772CA47AAB59 /* EstimateService.swift in Sources */,
+				C9C4CBC0AA2651B2623F90D6 /* HapticsService.swift in Sources */,
+				325B9E998D33A286EB0BFCEC /* HistoryViewModel.swift in Sources */,
+				81001516564AB62603688449 /* HomeView.swift in Sources */,
+				1EF4D50567765778A51F82AA /* LoginView.swift in Sources */,
+				60A149A920E0EE7064E657E8 /* MenuView.swift in Sources */,
+				E9EB178BBE59472C5362E170 /* Models.swift in Sources */,
+				AF916FD78E2E2E7E172E11EC /* MultiImagePicker.swift in Sources */,
+				279AEB3BCEF1E2789B052333 /* NetworkMonitor.swift in Sources */,
+				792DEF3B51E580815DF632D1 /* PDFQuoteRenderer.swift in Sources */,
+				785F1AC534C41CBB1B007276 /* PlumbingQuoteAppApp.swift in Sources */,
+				BBDDCF4B6639182ED2FF0C28 /* QuoteEditView.swift in Sources */,
+				775D2D9A47AC7D14232A6707 /* QuoteEditViewModel.swift in Sources */,
+				61BEEDB5EF6159B59C43346D /* QuoteHistoryView.swift in Sources */,
+				5DC47949A45FFE3AB991475C /* QuoteResultView.swift in Sources */,
+				8391A68FBEBC47BA77B2A287 /* QuoteViewModel.swift in Sources */,
+				6BFC5E8285BF9E616696C237 /* SignaturePadView.swift in Sources */,
+				E4BCBC0007CC78BD3E4EBB3C /* SupabaseService.swift in Sources */,
+				CC414B9C8C91D953A1B292A4 /* VoiceService.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		2CF623B0921C3DC94090F7B9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = PlumbingQuoteApp;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		487E119114589575D60B2052 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = PlumbingQuoteApp;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		DC86BF42633E89E987669FAC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = PlumbingQuoteApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hometitan.plumbquote;
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F11907AB1DB7513A8D12A0BD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = PlumbingQuoteApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hometitan.plumbquote;
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B717EEB4186635AE90FCD1B2 /* Build configuration list for PBXNativeTarget "PlumbingQuoteApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DC86BF42633E89E987669FAC /* Debug */,
+				F11907AB1DB7513A8D12A0BD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		DACD4B5475D4EB2B118BF159 /* Build configuration list for PBXProject "PlumbingQuoteApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				487E119114589575D60B2052 /* Debug */,
+				2CF623B0921C3DC94090F7B9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		FF1CA66EA568C7CBB79A1E13 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C08944FE33B240A01C28EEE8 /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FF1CA66EA568C7CBB79A1E13 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 29685A4673DE1E5E05185883 /* Project object */;
+}
