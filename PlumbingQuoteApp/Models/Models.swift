@@ -82,10 +82,10 @@ struct Quote: Identifiable, Codable {
     let lineItems: [QuoteLineItem]
     let laborHours: Double
     let laborRate: Double
-    let laborTotal: Double?
-    let partsTotal: Double?
-    let tax: Double?
-    let total: Double?
+    let laborTotal: Double? = nil
+    let partsTotal: Double? = nil
+    let tax: Double? = nil
+    let total: Double? = nil
     let warrantyMonths: Int
     let solutionDescription: String
     let notes: String

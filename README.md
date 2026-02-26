@@ -18,10 +18,10 @@ Production-focused iOS app for on-site plumbing estimates using photos + voice n
 
 ## iOS Setup
 
-1. Copy `Config/Secrets.xcconfig.example` to `Config/Secrets.xcconfig`.
+1. Copy `PlumbingQuoteApp/Secrets.swift.example` to `PlumbingQuoteApp/Secrets.swift`.
 2. Fill in:
-   - `SUPABASE_URL`
-   - `SUPABASE_ANON_KEY`
+   - `supabaseURL`
+   - `supabaseAnonKey`
 3. Generate project:
 
 ```bash
@@ -67,11 +67,11 @@ supabase functions deploy analyze-issue
 - Explicit enum-safe status/tier values
 - Storage RLS tightened to owner folder reads
 - Quote reference number returned to app and shown in share output
-- `.xcconfig`-based client config instead of hardcoded secrets
+- Dedicated `Secrets.swift` file (gitignored) for client config
 - Image preview, haptics, and improved offline error handling
 
 ## Security
 
-- `Config/Secrets.xcconfig` is gitignored.
+- `PlumbingQuoteApp/Secrets.swift` is gitignored.
 - `.env.local` is gitignored.
 - Rotate exposed credentials immediately if they were ever shared externally.

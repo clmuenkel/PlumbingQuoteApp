@@ -54,7 +54,7 @@ final class AuthViewModel: ObservableObject {
                 message: "Sign in failed: \(error.localizedDescription)",
                 context: ["source": "AuthViewModel.signIn", "email": email]
             )
-            self.error = error.localizedDescription
+            self.error = userFacingError(for: error)
             isAuthenticated = false
         }
     }
@@ -76,36 +76,107 @@ final class AuthViewModel: ObservableObject {
     private func loadCurrentTechnician() async throws {
         let session = try await supabase.auth.session
         let user = session.user
-        let existing: [TechnicianDTO] = try await supabase
-            .from("User")
-            .select()
-            .eq("authId", value: user.id.uuidString)
-            .limit(1)
-            .execute()
-            .value
+        // PostgreSQL uuid::text produces lowercase; Swift UUID.uuidString is uppercase.
+        // Normalize to lowercase so the .eq() query matches the DB value.
+        let authId = user.id.uuidString.lowercased()
 
-        if let dto = existing.first {
-            currentTechnician = dto.toModel()
+        if let existing = try await fetchTechnician(authId: authId) {
+            currentTechnician = existing
             return
         }
 
-        let inserted: TechnicianDTO = try await supabase
+        let now = ISO8601DateFormatter().string(from: Date())
+        let newUser = NewUserPayload(
+            id: "usr_\(UUID().uuidString.replacingOccurrences(of: "-", with: "").lowercased())",
+            authId: authId,
+            name: user.email?.split(separator: "@").first.map(String.init) ?? "Technician",
+            email: user.email ?? "unknown@example.com",
+            role: "technician",
+            active: true,
+            createdAt: now,
+            updatedAt: now
+        )
+
+        do {
+            let inserted: TechnicianDTO = try await supabase
+                .from("User")
+                .insert(newUser)
+                .select()
+                .single()
+                .execute()
+                .value
+            currentTechnician = inserted.toModel()
+        } catch {
+            if isUniqueConstraintError(error),
+               let existingAfterConflict = try await retryFetchTechnician(authId: authId) {
+                currentTechnician = existingAfterConflict
+                return
+            }
+            throw error
+        }
+    }
+
+    private func fetchTechnician(authId: String) async throws -> Technician? {
+        let existing: [TechnicianDTO] = try await supabase
             .from("User")
-            .insert([
-                "id": "usr_\(UUID().uuidString.replacingOccurrences(of: "-", with: ""))",
-                "authId": user.id.uuidString,
-                "name": user.email?.split(separator: "@").first.map(String.init) ?? "Technician",
-                "email": user.email ?? "unknown@example.com",
-                "role": "technician",
-                "active": true
-            ])
             .select()
-            .single()
+            .eq("authId", value: authId)
+            .limit(1)
             .execute()
             .value
-
-        currentTechnician = inserted.toModel()
+        return existing.first?.toModel()
     }
+
+    private func retryFetchTechnician(authId: String) async throws -> Technician? {
+        for _ in 0..<3 {
+            if let existing = try await fetchTechnician(authId: authId) {
+                return existing
+            }
+            try await Task.sleep(nanoseconds: 250_000_000)
+        }
+        return nil
+    }
+
+    private func isUniqueConstraintError(_ error: Error) -> Bool {
+        let message = error.localizedDescription.lowercased()
+        return message.contains("duplicate key")
+            || message.contains("unique constraint")
+            || message.contains("23505")
+    }
+
+    private func userFacingError(for error: Error) -> String {
+        let message = error.localizedDescription.lowercased()
+        if message.contains("invalid login credentials") {
+            return "Incorrect email or password."
+        }
+        if message.contains("email not confirmed") {
+            return "Email not confirmed. Check your inbox for the confirmation link."
+        }
+        if message.contains("rate limit") || message.contains("too many requests") {
+            return "Too many attempts. Please wait a minute and try again."
+        }
+        if message.contains("network")
+            || message.contains("timed out")
+            || message.contains("offline")
+            || message.contains("internet") {
+            return "Network issue. Check your connection and try again."
+        }
+        if isUniqueConstraintError(error) {
+            return "Your account is syncing. Please try again."
+        }
+        return "Sign in failed. Please try again."
+    }
+}
+
+private struct NewUserPayload: Encodable {
+    let id: String
+    let authId: String
+    let name: String
+    let email: String
+    let role: String
+    let active: Bool
+    let createdAt: String
+    let updatedAt: String
 }
 
 private struct TechnicianDTO: Decodable {

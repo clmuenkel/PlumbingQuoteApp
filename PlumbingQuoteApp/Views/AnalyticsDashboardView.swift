@@ -75,13 +75,25 @@ struct AnalyticsDashboardView: View {
             Text("Category Breakdown")
                 .font(.headline)
 
-            Chart(viewModel.categoryBreakdown.prefix(6)) { item in
-                SectorMark(
-                    angle: .value("Quotes", item.quoteCount),
-                    innerRadius: .ratio(0.5),
-                    angularInset: 1.5
-                )
-                .foregroundStyle(by: .value("Category", item.category))
+            Group {
+                if #available(iOS 17.0, *) {
+                    Chart(viewModel.categoryBreakdown.prefix(6)) { item in
+                        SectorMark(
+                            angle: .value("Quotes", item.quoteCount),
+                            innerRadius: .ratio(0.5),
+                            angularInset: 1.5
+                        )
+                        .foregroundStyle(by: .value("Category", item.category))
+                    }
+                } else {
+                    Chart(viewModel.categoryBreakdown.prefix(6)) { item in
+                        BarMark(
+                            x: .value("Category", item.category),
+                            y: .value("Quotes", item.quoteCount)
+                        )
+                        .foregroundStyle(by: .value("Category", item.category))
+                    }
+                }
             }
             .frame(height: 220)
         }

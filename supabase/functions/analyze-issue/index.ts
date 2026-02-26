@@ -231,11 +231,27 @@ async function ensureUserRow(authUserId: string, email: string | null, userName:
     .select("id")
     .single();
 
-  if (inserted.error || !inserted.data) {
-    throw new Error(`Could not create User row: ${inserted.error?.message ?? "unknown"}`);
+  if (!inserted.error && inserted.data?.id) {
+    return { id: inserted.data.id as string };
   }
 
-  return { id: inserted.data.id as string };
+  const duplicateConflict = inserted.error?.code === "23505"
+    || (inserted.error?.message ?? "").toLowerCase().includes("duplicate key")
+    || (inserted.error?.message ?? "").toLowerCase().includes("unique constraint");
+  if (duplicateConflict) {
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      const retryExisting = await admin
+        .from("User")
+        .select("id")
+        .eq("authId", authUserId)
+        .limit(1)
+        .maybeSingle();
+      if (retryExisting.data?.id) return { id: retryExisting.data.id as string };
+      await new Promise((resolve) => setTimeout(resolve, 250 * (attempt + 1)));
+    }
+  }
+
+  throw new Error(`Could not create User row: ${inserted.error?.message ?? "unknown"}`);
 }
 
 Deno.serve(async (req) => {

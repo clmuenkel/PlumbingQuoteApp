@@ -27,15 +27,10 @@ targets:
         NSMicrophoneUsageDescription: PlumbQuote needs microphone access so you can describe plumbing issues by voice.
         NSSpeechRecognitionUsageDescription: PlumbQuote uses speech recognition to convert your voice description to text for generating quotes.
         NSPhotoLibraryUsageDescription: PlumbQuote needs photo library access to select existing photos of plumbing issues.
-        SUPABASE_URL: $(SUPABASE_URL)
-        SUPABASE_ANON_KEY: $(SUPABASE_ANON_KEY)
     dependencies:
       - package: Supabase
         product: Supabase
     settings:
-      configFiles:
-        Debug: Config/Debug.xcconfig
-        Release: Config/Release.xcconfig
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.hometitan.plumbquote
         INFOPLIST_FILE: PlumbingQuoteApp/Info.plist

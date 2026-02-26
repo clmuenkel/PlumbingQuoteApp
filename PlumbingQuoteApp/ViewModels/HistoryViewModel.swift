@@ -19,7 +19,7 @@ final class HistoryViewModel: ObservableObject {
             let userRows: [HistoryUserRow] = try await supabase
                 .from("User")
                 .select("id")
-                .eq("authId", value: session.user.id.uuidString)
+                .eq("authId", value: session.user.id.uuidString.lowercased())
                 .limit(1)
                 .execute()
                 .value

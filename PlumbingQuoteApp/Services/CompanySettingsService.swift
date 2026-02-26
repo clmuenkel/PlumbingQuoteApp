@@ -24,7 +24,7 @@ final class CompanySettingsService {
                 .value
             guard let row = rows.first else { return .default }
             return CompanyInfo(
-                name: row.company_name?.isEmpty == false ? row.company_name! : CompanyInfo.default.name,
+                name: (row.company_name?.isEmpty == false ? row.company_name : nil) ?? CompanyInfo.default.name,
                 phone: row.company_phone ?? "",
                 address: row.company_address ?? "",
                 logo: nil

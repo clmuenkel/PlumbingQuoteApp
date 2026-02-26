@@ -13,6 +13,7 @@
 		21BF09CEE568D74B74E4693E /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = B343FE90D7722A013B4F39F3 /* Config.swift */; };
 		279AEB3BCEF1E2789B052333 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A7BC8D11011516E12164CA /* NetworkMonitor.swift */; };
 		325B9E998D33A286EB0BFCEC /* HistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA342AB9B6CCFD2C4F1969AE /* HistoryViewModel.swift */; };
+		57EE10FDCD232E4A2FCA4F78 /* Secrets.swift.example in Resources */ = {isa = PBXBuildFile; fileRef = 9101B299A321CB19151A9EB9 /* Secrets.swift.example */; };
 		5DC47949A45FFE3AB991475C /* QuoteResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73DFF3A98CDDD05F09CB3273 /* QuoteResultView.swift */; };
 		5ECC5BC00AF31F231760C9EE /* ErrorLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3C8A2F6B2336A6B5DE24FF /* ErrorLogger.swift */; };
 		60A149A920E0EE7064E657E8 /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5473F917167A58CC3E552EC5 /* MenuView.swift */; };
@@ -25,6 +26,7 @@
 		8391A68FBEBC47BA77B2A287 /* QuoteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16C5334CBD0C6B6515FBF8A7 /* QuoteViewModel.swift */; };
 		856F6DCC95E67735AD66AFF2 /* CompanySettingsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52B46A2656A1BDDE1457360 /* CompanySettingsService.swift */; };
 		90934CC84B34AE5AC539A4E3 /* AIQuoteService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8B22A6A881C7DA30AF48DD /* AIQuoteService.swift */; };
+		9FBABD7E830327BF9542A187 /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26CA1CE89E174C54C545BD04 /* Secrets.swift */; };
 		AF916FD78E2E2E7E172E11EC /* MultiImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A684F6006CFBA162CA4F3A2 /* MultiImagePicker.swift */; };
 		B7562A2B813A3666342BD47B /* CameraService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 732E9140AAAD97097EB2DC77 /* CameraService.swift */; };
 		BBDDCF4B6639182ED2FF0C28 /* QuoteEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89649647F92F041AFD5DCA6D /* QuoteEditView.swift */; };
@@ -41,6 +43,7 @@
 		0907F052D7501F3120FF26DB /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		0ACD5F17BB2E20313999B835 /* PlumbingQuoteAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlumbingQuoteAppApp.swift; sourceTree = "<group>"; };
 		16C5334CBD0C6B6515FBF8A7 /* QuoteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuoteViewModel.swift; sourceTree = "<group>"; };
+		26CA1CE89E174C54C545BD04 /* Secrets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Secrets.swift; sourceTree = "<group>"; };
 		2D8B22A6A881C7DA30AF48DD /* AIQuoteService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIQuoteService.swift; sourceTree = "<group>"; };
 		3FB35244CE8D8DDC6F73464E /* EstimateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EstimateService.swift; sourceTree = "<group>"; };
 		47384DC96F9F7BD24BA0E102 /* VoiceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceService.swift; sourceTree = "<group>"; };
@@ -55,6 +58,7 @@
 		8A684F6006CFBA162CA4F3A2 /* MultiImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiImagePicker.swift; sourceTree = "<group>"; };
 		8E5FF5EE25EA458521D8662C /* QuoteEditViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuoteEditViewModel.swift; sourceTree = "<group>"; };
 		8EB8955C6734B9E61BC78F5F /* PDFQuoteRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFQuoteRenderer.swift; sourceTree = "<group>"; };
+		9101B299A321CB19151A9EB9 /* Secrets.swift.example */ = {isa = PBXFileReference; path = Secrets.swift.example; sourceTree = "<group>"; };
 		911BA7CFE0545FB0392F407C /* HapticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticsService.swift; sourceTree = "<group>"; };
 		99CBCA5E001002B4BAB4D915 /* AnalyticsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsViewModel.swift; sourceTree = "<group>"; };
 		A52B46A2656A1BDDE1457360 /* CompanySettingsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanySettingsService.swift; sourceTree = "<group>"; };
@@ -130,6 +134,8 @@
 			children = (
 				B343FE90D7722A013B4F39F3 /* Config.swift */,
 				0ACD5F17BB2E20313999B835 /* PlumbingQuoteAppApp.swift */,
+				26CA1CE89E174C54C545BD04 /* Secrets.swift */,
+				9101B299A321CB19151A9EB9 /* Secrets.swift.example */,
 				BDB3192A4782992446CA17D0 /* Models */,
 				2D0CA207E5E45DF186AE82F8 /* Services */,
 				8BD41B2ED64353655420E218 /* ViewModels */,
@@ -178,6 +184,7 @@
 			buildConfigurationList = B717EEB4186635AE90FCD1B2 /* Build configuration list for PBXNativeTarget "PlumbingQuoteApp" */;
 			buildPhases = (
 				45590C1E8FC4915985717BD5 /* Sources */,
+				A8DDC404F1260C9A829AC91C /* Resources */,
 				D9E54539BA23FCD72D499C7E /* Frameworks */,
 			);
 			buildRules = (
@@ -229,6 +236,17 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		A8DDC404F1260C9A829AC91C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				57EE10FDCD232E4A2FCA4F78 /* Secrets.swift.example in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		45590C1E8FC4915985717BD5 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -258,6 +276,7 @@
 				61BEEDB5EF6159B59C43346D /* QuoteHistoryView.swift in Sources */,
 				5DC47949A45FFE3AB991475C /* QuoteResultView.swift in Sources */,
 				8391A68FBEBC47BA77B2A287 /* QuoteViewModel.swift in Sources */,
+				9FBABD7E830327BF9542A187 /* Secrets.swift in Sources */,
 				6BFC5E8285BF9E616696C237 /* SignaturePadView.swift in Sources */,
 				E4BCBC0007CC78BD3E4EBB3C /* SupabaseService.swift in Sources */,
 				CC414B9C8C91D953A1B292A4 /* VoiceService.swift in Sources */,
