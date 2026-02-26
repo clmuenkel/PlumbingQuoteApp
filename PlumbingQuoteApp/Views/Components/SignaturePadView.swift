@@ -5,6 +5,7 @@ struct SignaturePadView: View {
     let onCancel: () -> Void
     let onDone: (UIImage) -> Void
 
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var strokes: [[CGPoint]] = []
     @State private var currentStroke: [CGPoint] = []
     @State private var canvasSize: CGSize = .zero
@@ -53,7 +54,7 @@ struct SignaturePadView: View {
                         }
                     }
                 }
-                .frame(height: 320)
+                .frame(minHeight: signatureCanvasHeight)
 
                 HStack {
                     Button("Clear") {
@@ -116,5 +117,9 @@ struct SignaturePadView: View {
             x: point.x * (size.width / canvasSize.width),
             y: point.y * (size.height / canvasSize.height)
         )
+    }
+
+    private var signatureCanvasHeight: CGFloat {
+        horizontalSizeClass == .compact ? 260 : 320
     }
 }

@@ -26,5 +26,13 @@
 	<string>PlumbQuote needs photo library access to select existing photos of plumbing issues.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>PlumbQuote uses speech recognition to convert your voice description to text for generating quotes.</string>
+	<key>UIRequiresFullScreen</key>
+	<true/>
+	<key>UILaunchScreen</key>
+	<dict/>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
 </dict>
 </plist>

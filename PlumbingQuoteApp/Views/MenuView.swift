@@ -27,7 +27,7 @@ struct MenuView: View {
                         Label("Analytics", systemImage: "chart.bar")
                     }
 
-                    NavigationLink(destination: Text("Settings coming in phase 2").padding()) {
+                    NavigationLink(destination: SettingsView()) {
                         Label("Settings", systemImage: "gearshape")
                     }
                 }

@@ -1,10 +1,15 @@
 import SwiftUI
 
 struct QuoteEditView: View {
+    private enum Field: Hashable {
+        case unitPrice(String)
+    }
+
     @Environment(\.dismiss) private var dismiss
     @StateObject var viewModel: QuoteEditViewModel
     let tierName: String
-    let onSaved: () -> Void
+    let onSaved: (Quote) -> Void
+    @FocusState private var focusedField: Field?
 
     var body: some View {
         NavigationStack {
@@ -40,7 +45,8 @@ struct QuoteEditView: View {
                                 TextField("0.00", value: $item.unitPrice, format: .number.precision(.fractionLength(2)))
                                     .keyboardType(.decimalPad)
                                     .multilineTextAlignment(.trailing)
-                                    .frame(width: 100)
+                                    .focused($focusedField, equals: .unitPrice(item.id))
+                                    .frame(minWidth: 80, idealWidth: 100, maxWidth: 130)
                             }
 
                             HStack {
@@ -95,12 +101,18 @@ struct QuoteEditView: View {
                     Button(viewModel.isSaving ? "Saving..." : "Save") {
                         Task {
                             if await viewModel.save() {
-                                onSaved()
+                                onSaved(viewModel.buildUpdatedQuote())
                                 dismiss()
                             }
                         }
                     }
                     .disabled(viewModel.isSaving)
+                }
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") {
+                        focusedField = nil
+                    }
                 }
             }
         }

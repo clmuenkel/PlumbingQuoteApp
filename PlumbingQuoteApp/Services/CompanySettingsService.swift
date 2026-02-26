@@ -11,13 +11,32 @@ final class CompanySettingsService {
         let company_name: String?
         let company_phone: String?
         let company_address: String?
+        let labor_rate_per_hour: Double?
+        let tax_rate: Double?
+    }
+
+    struct CompanySettingsData {
+        var companyName: String
+        var companyPhone: String
+        var companyAddress: String
+        var laborRatePerHour: Double
+        var taxRate: Double
+    }
+
+    private struct UpdateCompanySettingsPayload: Encodable {
+        let company_name: String
+        let company_phone: String
+        let company_address: String
+        let labor_rate_per_hour: Double
+        let tax_rate: Double
+        let updated_at: String
     }
 
     func fetchCompanyInfo() async -> CompanyInfo {
         do {
             let rows: [CompanySettingsRow] = try await supabase
                 .from("company_settings")
-                .select("company_name, company_phone, company_address")
+                .select("company_name, company_phone, company_address, labor_rate_per_hour, tax_rate")
                 .eq("id", value: "default")
                 .limit(1)
                 .execute()
@@ -32,5 +51,58 @@ final class CompanySettingsService {
         } catch {
             return .default
         }
+    }
+
+    func fetchCompanySettings() async -> CompanySettingsData {
+        do {
+            let rows: [CompanySettingsRow] = try await supabase
+                .from("company_settings")
+                .select("company_name, company_phone, company_address, labor_rate_per_hour, tax_rate")
+                .eq("id", value: "default")
+                .limit(1)
+                .execute()
+                .value
+            guard let row = rows.first else {
+                return CompanySettingsData(
+                    companyName: CompanyInfo.default.name,
+                    companyPhone: "",
+                    companyAddress: "",
+                    laborRatePerHour: 95,
+                    taxRate: 0.08
+                )
+            }
+            return CompanySettingsData(
+                companyName: (row.company_name?.isEmpty == false ? row.company_name : nil) ?? CompanyInfo.default.name,
+                companyPhone: row.company_phone ?? "",
+                companyAddress: row.company_address ?? "",
+                laborRatePerHour: row.labor_rate_per_hour ?? 95,
+                taxRate: row.tax_rate ?? 0.08
+            )
+        } catch {
+            return CompanySettingsData(
+                companyName: CompanyInfo.default.name,
+                companyPhone: "",
+                companyAddress: "",
+                laborRatePerHour: 95,
+                taxRate: 0.08
+            )
+        }
+    }
+
+    func updateCompanySettings(_ settings: CompanySettingsData) async throws {
+        let payload = UpdateCompanySettingsPayload(
+            company_name: settings.companyName.trimmingCharacters(in: .whitespacesAndNewlines),
+            company_phone: settings.companyPhone.trimmingCharacters(in: .whitespacesAndNewlines),
+            company_address: settings.companyAddress.trimmingCharacters(in: .whitespacesAndNewlines),
+            labor_rate_per_hour: settings.laborRatePerHour,
+            tax_rate: settings.taxRate,
+            updated_at: ISO8601DateFormatter().string(from: Date())
+        )
+
+        _ = try await supabase
+            .from("company_settings")
+            .update(payload)
+            .eq("id", value: "default")
+            .execute()
     }
 }

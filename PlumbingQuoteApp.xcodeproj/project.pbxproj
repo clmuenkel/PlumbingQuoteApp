@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 63;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -35,6 +35,7 @@
 		CC414B9C8C91D953A1B292A4 /* VoiceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47384DC96F9F7BD24BA0E102 /* VoiceService.swift */; };
 		E4BCBC0007CC78BD3E4EBB3C /* SupabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCBD7F66E7019E28D04204C4 /* SupabaseService.swift */; };
 		E9EB178BBE59472C5362E170 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0907F052D7501F3120FF26DB /* Models.swift */; };
+		EC8E6CFC4B61190E31876C62 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E99C50AC1631D6688B03AB9C /* SettingsView.swift */; };
 		F1B31438A6EE51EBF1ACEF7C /* AnalyticsDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E0462F5CD7072C5498D8AC /* AnalyticsDashboardView.swift */; };
 		F81933C3CC72B608BB7D5141 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EB9F8BEBA2685F7EE511C8 /* AuthViewModel.swift */; };
 /* End PBXBuildFile section */
@@ -58,16 +59,17 @@
 		8A684F6006CFBA162CA4F3A2 /* MultiImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiImagePicker.swift; sourceTree = "<group>"; };
 		8E5FF5EE25EA458521D8662C /* QuoteEditViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuoteEditViewModel.swift; sourceTree = "<group>"; };
 		8EB8955C6734B9E61BC78F5F /* PDFQuoteRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFQuoteRenderer.swift; sourceTree = "<group>"; };
-		9101B299A321CB19151A9EB9 /* Secrets.swift.example */ = {isa = PBXFileReference; path = Secrets.swift.example; sourceTree = "<group>"; };
+		9101B299A321CB19151A9EB9 /* Secrets.swift.example */ = {isa = PBXFileReference; lastKnownFileType = text; path = Secrets.swift.example; sourceTree = "<group>"; };
 		911BA7CFE0545FB0392F407C /* HapticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticsService.swift; sourceTree = "<group>"; };
 		99CBCA5E001002B4BAB4D915 /* AnalyticsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsViewModel.swift; sourceTree = "<group>"; };
 		A52B46A2656A1BDDE1457360 /* CompanySettingsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanySettingsService.swift; sourceTree = "<group>"; };
 		A9A7BC8D11011516E12164CA /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
 		B343FE90D7722A013B4F39F3 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		BA342AB9B6CCFD2C4F1969AE /* HistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewModel.swift; sourceTree = "<group>"; };
-		C01DA9F6EA8CA28CC36E8AA2 /* PlumbingQuoteApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PlumbingQuoteApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C01DA9F6EA8CA28CC36E8AA2 /* PlumbingQuoteApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PlumbingQuoteApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5BFEC095465D3C653ADD10B /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		E2E0462F5CD7072C5498D8AC /* AnalyticsDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsDashboardView.swift; sourceTree = "<group>"; };
+		E99C50AC1631D6688B03AB9C /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		F099798BFDBFEE0E03746EA0 /* QuoteHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuoteHistoryView.swift; sourceTree = "<group>"; };
 		FCBD7F66E7019E28D04204C4 /* SupabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -171,6 +173,7 @@
 				89649647F92F041AFD5DCA6D /* QuoteEditView.swift */,
 				F099798BFDBFEE0E03746EA0 /* QuoteHistoryView.swift */,
 				73DFF3A98CDDD05F09CB3273 /* QuoteResultView.swift */,
+				E99C50AC1631D6688B03AB9C /* SettingsView.swift */,
 				E60C176A379816300A399789 /* Components */,
 			);
 			path = Views;
@@ -209,7 +212,6 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					29B3A7CC03891E724B9C5064 = {
-						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -227,7 +229,6 @@
 			packageReferences = (
 				FF1CA66EA568C7CBB79A1E13 /* XCRemoteSwiftPackageReference "supabase-swift" */,
 			);
-			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -277,6 +278,7 @@
 				5DC47949A45FFE3AB991475C /* QuoteResultView.swift in Sources */,
 				8391A68FBEBC47BA77B2A287 /* QuoteViewModel.swift in Sources */,
 				9FBABD7E830327BF9542A187 /* Secrets.swift in Sources */,
+				EC8E6CFC4B61190E31876C62 /* SettingsView.swift in Sources */,
 				6BFC5E8285BF9E616696C237 /* SignaturePadView.swift in Sources */,
 				E4BCBC0007CC78BD3E4EBB3C /* SupabaseService.swift in Sources */,
 				CC414B9C8C91D953A1B292A4 /* VoiceService.swift in Sources */,
@@ -414,6 +416,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5CN4LR4Q8D;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = PlumbingQuoteApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -438,6 +441,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5CN4LR4Q8D;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = PlumbingQuoteApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;

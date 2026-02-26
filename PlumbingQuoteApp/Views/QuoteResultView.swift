@@ -15,11 +15,14 @@ struct QuoteResultView: View {
     @State private var showSignaturePad = false
     @State private var signatureImage: UIImage?
     @State private var showEditQuote = false
+    @State private var quoteOverrides: [QuoteTier: Quote] = [:]
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 16) {
                     headerCard
                     if !result.failedUploads.isEmpty {
                         HStack(spacing: 8) {
@@ -38,7 +41,7 @@ struct QuoteResultView: View {
                     tierCard(for: .best)
 
                     if showBreakdown {
-                        quoteBreakdownCard(for: result.quote(for: selectedTier))
+                        quoteBreakdownCard(for: quote(for: selectedTier))
                     }
 
                     actionButtons
@@ -50,7 +53,7 @@ struct QuoteResultView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
-                .padding(.horizontal, 20)
+                .padding(.horizontal, horizontalPadding)
                 .padding(.top, 10)
                 .padding(.bottom, 20)
             }
@@ -85,15 +88,17 @@ struct QuoteResultView: View {
             .sheet(isPresented: $showEditQuote) {
                 if let estimateId = result.remoteId,
                    let optionId = selectedOptionId(for: selectedTier) {
+                    let editingTier = selectedTier
                     QuoteEditView(
                         viewModel: QuoteEditViewModel(
                             estimateId: estimateId,
                             optionId: optionId,
-                            quote: result.quote(for: selectedTier)
+                            quote: quote(for: selectedTier)
                         ),
                         tierName: selectedTier.rawValue,
-                        onSaved: {
-                            statusError = "Quote line items saved. Reopen to refresh totals."
+                        onSaved: { updatedQuote in
+                            quoteOverrides[editingTier] = updatedQuote
+                            statusError = "Quote line items saved."
                         }
                     )
                 } else {
@@ -102,9 +107,9 @@ struct QuoteResultView: View {
                 }
             }
             .onAppear {
-                estimateStatus = .draft
                 Task {
                     companyInfo = await CompanySettingsService.shared.fetchCompanyInfo()
+                    await loadEstimateStatusIfNeeded()
                 }
             }
         }
@@ -159,7 +164,7 @@ struct QuoteResultView: View {
     }
 
     private func tierCard(for tier: QuoteTier) -> some View {
-        let quote = result.quote(for: tier)
+        let quote = quote(for: tier)
 
         return Button {
             withAnimation(.easeInOut(duration: 0.2)) {
@@ -168,15 +173,22 @@ struct QuoteResultView: View {
         } label: {
             VStack(alignment: .leading, spacing: 10) {
                 HStack {
-                    Text(tier.rawValue)
-                        .font(.headline)
-                        .foregroundStyle(tier.color)
+                    HStack(spacing: 6) {
+                        if selectedTier == tier {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(tier.color)
+                        }
+                        Text(tier.rawValue)
+                            .font(.headline)
+                            .foregroundStyle(tier.color)
+                    }
                     if tier == .better {
                         Text("Most Popular")
-                            .font(.caption2.weight(.semibold))
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(Color.blue.opacity(0.1))
+                            .font(.caption.weight(.bold))
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 5)
+                            .background(Color.blue.opacity(0.14))
                             .foregroundStyle(.blue)
                             .clipShape(Capsule())
                     }
@@ -195,10 +207,14 @@ struct QuoteResultView: View {
                     .font(.caption.weight(.medium))
                     .foregroundStyle(.secondary)
             }
-            .padding(14)
+            .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color(.secondarySystemBackground))
+            .background(.regularMaterial)
             .clipShape(RoundedRectangle(cornerRadius: 14))
+            .overlay(
+                RoundedRectangle(cornerRadius: 14)
+                    .fill(tier == .better ? Color.blue.opacity(0.06) : .clear)
+            )
             .overlay(
                 RoundedRectangle(cornerRadius: 14)
                     .stroke(selectedTier == tier ? tier.color : .clear, lineWidth: 2)
@@ -254,85 +270,123 @@ struct QuoteResultView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(14)
-        .background(.background)
+        .background(.regularMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 14))
     }
 
     private var actionButtons: some View {
         VStack(spacing: 12) {
-            Button {
-                prepareAndSharePDF()
-                Task { await updateEstimateStatus(.sent) }
-            } label: {
-                HStack {
-                    Image(systemName: "paperplane.fill")
-                    Text(isUpdatingStatus ? "Updating..." : "Send to Customer")
-                        .fontWeight(.bold)
-                }
-                .frame(maxWidth: .infinity)
-                .frame(height: 48)
-                .background(selectedTier.color)
-                .foregroundColor(.white)
-                .clipShape(RoundedRectangle(cornerRadius: 14))
-            }
-            .disabled(isUpdatingStatus)
-
-            HStack(spacing: 12) {
+            if estimateStatus == .draft || estimateStatus == .sent {
                 Button {
-                    showSignaturePad = true
+                    if estimateStatus == .draft {
+                        prepareAndSharePDF()
+                        Task { await updateEstimateStatus(.sent) }
+                    } else {
+                        showSignaturePad = true
+                    }
                 } label: {
-                    Text("Mark Accepted")
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 44)
-                        .background(Color.green.opacity(0.15))
-                        .foregroundStyle(.green)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                }
-                .disabled(isUpdatingStatus)
-
-                Button {
-                    Task { await updateEstimateStatus(.rejected) }
-                } label: {
-                    Text("Mark Rejected")
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 44)
-                        .background(Color.red.opacity(0.15))
-                        .foregroundStyle(.red)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    HStack {
+                        Image(systemName: estimateStatus == .draft ? "paperplane.fill" : "checkmark.circle.fill")
+                        Text(
+                            isUpdatingStatus
+                            ? "Updating..."
+                            : (estimateStatus == .draft ? "Send to Customer" : "Mark Accepted")
+                        )
+                            .fontWeight(.bold)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(minHeight: primaryButtonHeight)
+                    .background(estimateStatus == .draft ? selectedTier.color : Color.green)
+                    .foregroundColor(.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
                 .disabled(isUpdatingStatus)
             }
 
-            Button {
-                showEditQuote = true
-            } label: {
-                HStack {
-                    Image(systemName: "square.and.pencil")
-                    Text("Edit Quote")
+            VStack(alignment: .leading, spacing: 10) {
+                if estimateStatus == .sent {
+                    rejectButton
                 }
-                .frame(maxWidth: .infinity)
-                .frame(height: 44)
-                .background(Color(.systemGray5))
-                .foregroundStyle(.primary)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-            }
-
-            Button {
-                withAnimation {
-                    showBreakdown.toggle()
-                }
-            } label: {
-                HStack {
-                    Image(systemName: "list.bullet.rectangle")
-                    Text(showBreakdown ? "Hide Full Breakdown" : "See Full Breakdown")
-                }
-                .frame(maxWidth: .infinity)
-                .frame(height: 48)
-                .background(Color(.systemGray5))
-                .foregroundColor(.primary)
-                .clipShape(RoundedRectangle(cornerRadius: 14))
+                editQuoteButton
+                breakdownButton
             }
         }
+    }
+
+    private var rejectButton: some View {
+        Button {
+            Task { await updateEstimateStatus(.rejected) }
+        } label: {
+            Label("Reject", systemImage: "xmark.circle")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.red)
+                .lineLimit(1)
+                .minimumScaleFactor(0.85)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(minHeight: 44)
+                .padding(.horizontal, 12)
+                .background(.regularMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+        .disabled(isUpdatingStatus)
+        .buttonStyle(.plain)
+    }
+
+    private var editQuoteButton: some View {
+        Button {
+            showEditQuote = true
+        } label: {
+            Label("Edit Quote", systemImage: "square.and.pencil")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.primary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.85)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(minHeight: 44)
+                .padding(.horizontal, 12)
+                .background(.regularMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var breakdownButton: some View {
+        Button {
+            withAnimation {
+                showBreakdown.toggle()
+            }
+        } label: {
+            Label(
+                showBreakdown ? "Hide Breakdown" : "Full Breakdown",
+                systemImage: "list.bullet.rectangle"
+            )
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(.primary)
+            .lineLimit(1)
+            .minimumScaleFactor(0.85)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(minHeight: 44)
+            .padding(.horizontal, 12)
+            .background(.regularMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var isCompactWidth: Bool {
+        horizontalSizeClass == .compact
+    }
+
+    private var horizontalPadding: CGFloat {
+        isCompactWidth ? 16 : 20
+    }
+
+    private var secondaryButtonHeight: CGFloat {
+        dynamicTypeSize.isAccessibilitySize ? 50 : 44
+    }
+
+    private var primaryButtonHeight: CGFloat {
+        dynamicTypeSize.isAccessibilitySize ? 54 : 48
     }
 
     private func formatCurrency(_ value: Double) -> String {
@@ -343,7 +397,7 @@ struct QuoteResultView: View {
     }
     
     private func generateShareText() -> String {
-        let quote = result.quote(for: selectedTier)
+        let quote = quote(for: selectedTier)
         let quoteNumber = result.estimateNumber.map { "Quote #\($0)\n" } ?? ""
         return """
 PlumbQuote - \(selectedTier.rawValue) Option
@@ -379,7 +433,7 @@ Warranty: \(quote.warrantyMonths) months
     }
 
     private func selectedOptionId(for tier: QuoteTier) -> String? {
-        let quote = result.quote(for: tier)
+        let quote = quote(for: tier)
         if let optionId = quote.optionId, !optionId.isEmpty {
             return optionId
         }
@@ -402,7 +456,7 @@ Warranty: \(quote.warrantyMonths) months
                 selectedOptionId: optionId,
                 signatureImage: signature
             )
-            estimateStatus = status
+            estimateStatus = EstimateStatus(rawValue: status.rawValue) ?? status
         } catch {
             ErrorLogger.log(
                 message: "Quote status update failed: \(error.localizedDescription)",
@@ -415,6 +469,38 @@ Warranty: \(quote.warrantyMonths) months
             statusError = error.localizedDescription
         }
     }
+
+    private func quote(for tier: QuoteTier) -> Quote {
+        quoteOverrides[tier] ?? result.quote(for: tier)
+    }
+
+    private func loadEstimateStatusIfNeeded() async {
+        guard let estimateId = result.remoteId else {
+            estimateStatus = .draft
+            return
+        }
+        do {
+            let row: [EstimateStatusRow] = try await SupabaseService.shared.client
+                .from("Estimate")
+                .select("status")
+                .eq("id", value: estimateId)
+                .limit(1)
+                .execute()
+                .value
+            if let statusValue = row.first?.status,
+               let status = EstimateStatus(rawValue: statusValue) {
+                estimateStatus = status
+            } else {
+                estimateStatus = .draft
+            }
+        } catch {
+            estimateStatus = .draft
+        }
+    }
+}
+
+private struct EstimateStatusRow: Decodable {
+    let status: String
 }
 
 // MARK: - Share Sheet

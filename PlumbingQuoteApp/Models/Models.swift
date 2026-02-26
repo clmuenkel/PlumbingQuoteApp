@@ -60,6 +60,15 @@ struct QuoteLineItem: Identifiable, Codable {
     let unitPrice: Double
     let quantity: Double
     let category: String
+
+    enum CodingKeys: String, CodingKey {
+        case partName
+        case partNumber
+        case brand
+        case unitPrice
+        case quantity
+        case category
+    }
 }
 
 struct EditableLineItem: Identifiable {
@@ -89,6 +98,21 @@ struct Quote: Identifiable, Codable {
     let warrantyMonths: Int
     let solutionDescription: String
     let notes: String
+
+    enum CodingKeys: String, CodingKey {
+        case optionId
+        case tier
+        case lineItems
+        case laborHours
+        case laborRate
+        case laborTotal
+        case partsTotal
+        case tax
+        case total
+        case warrantyMonths
+        case solutionDescription
+        case notes
+    }
 
     var computedPartsTotal: Double {
         partsTotal ?? lineItems.reduce(0) { $0 + ($1.unitPrice * $1.quantity) }
@@ -197,6 +221,9 @@ struct AnalyzeResponse: Decodable {
         let best: Quote
     }
 
+    let gateStatus: String?
+    let gateReasons: [String]?
+    let canOverride: Bool?
     let quoteId: String
     let estimateNumber: Int?
     let customerName: String?

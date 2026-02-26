@@ -9,6 +9,8 @@ struct PlumbingQuoteAppApp: App {
             Group {
                 if authVM.isAuthenticated {
                     HomeView()
+                } else if AuthViewModel.skipAuthForTesting {
+                    ProgressView("Signing in…")
                 } else {
                     LoginView()
                 }

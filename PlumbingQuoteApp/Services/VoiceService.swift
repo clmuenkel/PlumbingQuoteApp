@@ -3,12 +3,15 @@ import Speech
 import AVFoundation
 
 // MARK: - Voice Service (Speech-to-Text)
-class VoiceService: NSObject, ObservableObject {
+class VoiceService: NSObject, ObservableObject, AVAudioPlayerDelegate {
     @Published var transcript: String = ""
     @Published var isRecording: Bool = false
     @Published var isAuthorized: Bool = false
     @Published var error: String?
     @Published var recordingSecondsRemaining: Int = 55
+    @Published var audioLevel: Float = 0
+    @Published var isPlaying: Bool = false
+    @Published var recordingURL: URL?
     
     private var audioEngine = AVAudioEngine()
     private var speechRecognizer: SFSpeechRecognizer?
@@ -16,6 +19,8 @@ class VoiceService: NSObject, ObservableObject {
     private var recognitionTask: SFSpeechRecognitionTask?
     private var initialTranscript: String = ""
     private var countdownTimer: Timer?
+    private var audioFile: AVAudioFile?
+    private var audioPlayer: AVAudioPlayer?
     
     override init() {
         super.init()
@@ -38,11 +43,14 @@ class VoiceService: NSObject, ObservableObject {
     }
     
     func startRecording() {
+        stopPlayback()
+
         // Reset
         recognitionTask?.cancel()
         recognitionTask = nil
         initialTranscript = transcript.trimmingCharacters(in: .whitespacesAndNewlines)
         error = nil
+        audioLevel = 0
         resetCountdown()
         
         let audioSession = AVAudioSession.sharedInstance()
@@ -96,9 +104,28 @@ class VoiceService: NSObject, ObservableObject {
         
         let inputNode = audioEngine.inputNode
         let recordingFormat = inputNode.outputFormat(forBus: 0)
+
+        do {
+            try FileManager.default.removeItem(at: tempRecordingURL)
+        } catch {
+            // Ignore if file doesn't exist.
+        }
+        do {
+            audioFile = try AVAudioFile(forWriting: tempRecordingURL, settings: recordingFormat.settings)
+            recordingURL = nil
+        } catch {
+            self.error = "Could not prepare audio file: \(error.localizedDescription)"
+            return
+        }
         
         inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { [weak self] buffer, _ in
-            self?.recognitionRequest?.append(buffer)
+            guard let self else { return }
+            self.recognitionRequest?.append(buffer)
+            try? self.audioFile?.write(from: buffer)
+            let level = self.normalizedRMS(from: buffer)
+            DispatchQueue.main.async {
+                self.audioLevel = level
+            }
         }
         
         do {
@@ -124,9 +151,15 @@ class VoiceService: NSObject, ObservableObject {
         recognitionRequest = nil
         recognitionTask?.cancel()
         recognitionTask = nil
+        audioFile = nil
+        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
         
         DispatchQueue.main.async {
             self.isRecording = false
+            self.audioLevel = 0
+            if FileManager.default.fileExists(atPath: self.tempRecordingURL.path) {
+                self.recordingURL = self.tempRecordingURL
+            }
             self.resetCountdown()
             HapticsService.recordStopped()
         }
@@ -142,6 +175,42 @@ class VoiceService: NSObject, ObservableObject {
 
     var hasTranscript: Bool {
         !transcript.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    func playback() {
+        guard let recordingURL else { return }
+        if isRecording {
+            stopRecording()
+        }
+        do {
+            try configurePlaybackSessionForSpeaker()
+            let player = try AVAudioPlayer(contentsOf: recordingURL)
+            player.delegate = self
+            player.prepareToPlay()
+            audioPlayer = player
+            isPlaying = true
+            player.play()
+        } catch {
+            self.error = "Playback failed: \(error.localizedDescription)"
+            isPlaying = false
+        }
+    }
+
+    func stopPlayback() {
+        audioPlayer?.stop()
+        audioPlayer = nil
+        isPlaying = false
+        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+    }
+
+    func clearTranscript() {
+        stopPlayback()
+        transcript = ""
+        recordingURL = nil
+        audioLevel = 0
+        initialTranscript = ""
+        error = nil
+        try? FileManager.default.removeItem(at: tempRecordingURL)
     }
 
     private func startCountdownTimer() {
@@ -164,5 +233,38 @@ class VoiceService: NSObject, ObservableObject {
 
     private func resetCountdown() {
         recordingSecondsRemaining = 55
+    }
+
+    private var tempRecordingURL: URL {
+        FileManager.default.temporaryDirectory.appendingPathComponent("voice_recording.caf")
+    }
+
+    private func normalizedRMS(from buffer: AVAudioPCMBuffer) -> Float {
+        guard let channelData = buffer.floatChannelData else { return 0 }
+        let channel = channelData[0]
+        let frameCount = Int(buffer.frameLength)
+        guard frameCount > 0 else { return 0 }
+
+        var sum: Float = 0
+        for i in 0..<frameCount {
+            let sample = channel[i]
+            sum += sample * sample
+        }
+        let rms = sqrt(sum / Float(frameCount))
+        return min(max(rms * 4.5, 0), 1)
+    }
+
+    private func configurePlaybackSessionForSpeaker() throws {
+        let audioSession = AVAudioSession.sharedInstance()
+        try audioSession.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .duckOthers])
+        try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
+        try audioSession.overrideOutputAudioPort(.speaker)
+    }
+
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        DispatchQueue.main.async {
+            self.isPlaying = false
+            self.audioPlayer = nil
+        }
     }
 }

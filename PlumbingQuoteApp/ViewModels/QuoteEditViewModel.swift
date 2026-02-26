@@ -10,10 +10,12 @@ final class QuoteEditViewModel: ObservableObject {
 
     private let estimateId: String
     private let optionId: String
+    private let originalQuote: Quote
 
     init(estimateId: String, optionId: String, quote: Quote) {
         self.estimateId = estimateId
         self.optionId = optionId
+        self.originalQuote = quote
         self.editableLineItems = quote.lineItems.map { item in
             EditableLineItem(
                 id: item.id,
@@ -94,5 +96,31 @@ final class QuoteEditViewModel: ObservableObject {
             self.error = error.localizedDescription
             return false
         }
+    }
+
+    func buildUpdatedQuote() -> Quote {
+        let updatedLineItems = editableLineItems.map { item in
+            QuoteLineItem(
+                id: item.id,
+                partName: item.name,
+                partNumber: item.id,
+                brand: "Custom",
+                unitPrice: item.unitPrice,
+                quantity: item.quantity,
+                category: "part"
+            )
+        }
+
+        return Quote(
+            id: originalQuote.id,
+            optionId: originalQuote.optionId,
+            tier: originalQuote.tier,
+            lineItems: updatedLineItems,
+            laborHours: laborHours,
+            laborRate: laborRate,
+            warrantyMonths: originalQuote.warrantyMonths,
+            solutionDescription: originalQuote.solutionDescription,
+            notes: originalQuote.notes
+        )
     }
 }

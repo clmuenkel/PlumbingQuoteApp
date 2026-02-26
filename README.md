@@ -70,6 +70,15 @@ supabase functions deploy analyze-issue
 - Dedicated `Secrets.swift` file (gitignored) for client config
 - Image preview, haptics, and improved offline error handling
 
+## Test account (QA)
+
+A simple QA user exists in Supabase Auth for manual testing:
+
+- **Email:** `qa@plumbquote.test`
+- **Password:** `QATest`
+
+Sign in with these in the app. To recreate the user (e.g. after reset): `node scripts/create_qa_user.js` (requires `.env.local` with `SUPABASE_SERVICE_ROLE_KEY`).
+
 ## Security
 
 - `PlumbingQuoteApp/Secrets.swift` is gitignored.

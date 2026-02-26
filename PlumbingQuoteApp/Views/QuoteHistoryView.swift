@@ -28,6 +28,7 @@ struct QuoteHistoryView: View {
                 Text("Draft").tag("draft")
                 Text("Sent").tag("sent")
                 Text("Accepted").tag("accepted")
+                Text("Rejected").tag("rejected")
             }
             .pickerStyle(.segmented)
             .padding(.horizontal)
@@ -40,6 +41,11 @@ struct QuoteHistoryView: View {
                         Spacer()
                         Text(formatCurrency(item.total))
                             .font(.subheadline.weight(.bold))
+                    }
+                    if let customerName = item.customerName, !customerName.isEmpty {
+                        Text(customerName)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.primary)
                     }
                     Text(item.category)
                         .font(.caption)
@@ -80,6 +86,17 @@ struct QuoteHistoryView: View {
             .overlay {
                 if viewModel.isLoading && viewModel.items.isEmpty {
                     ProgressView("Loading...")
+                } else if !viewModel.isLoading && filteredItems.isEmpty {
+                    VStack(spacing: 8) {
+                        Image(systemName: "doc.text.magnifyingglass")
+                            .font(.title3)
+                            .foregroundStyle(.secondary)
+                        Text("No quotes yet")
+                            .font(.headline)
+                        Text("Create a quote from Home to see it here.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
             .task {

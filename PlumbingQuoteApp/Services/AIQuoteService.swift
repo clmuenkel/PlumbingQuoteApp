@@ -16,7 +16,18 @@ final class AIQuoteService: ObservableObject {
     private struct EdgeError: Decodable {
         let error: String
         let code: String?
+        let gateStatus: String?
+        let gateReasons: [String]?
+        let canOverride: Bool?
     }
+
+    struct GatingFeedback {
+        let status: String
+        let reasons: [String]
+        let canOverride: Bool
+    }
+
+    @Published var lastGatingFeedback: GatingFeedback?
 
     func analyzeAndQuote(
         images: [UIImage],
@@ -24,11 +35,13 @@ final class AIQuoteService: ObservableObject {
         additionalNotes: String?,
         customerName: String?,
         customerPhone: String?,
-        customerAddress: String?
+        customerAddress: String?,
+        allowOverride: Bool = false
     ) async -> QuoteResult? {
         await MainActor.run {
             isAnalyzing = true
             error = nil
+            lastGatingFeedback = nil
         }
 
         defer {
@@ -56,6 +69,7 @@ final class AIQuoteService: ObservableObject {
             let customerName: String?
             let customerPhone: String?
             let customerAddress: String?
+            let allowOverride: Bool?
         }
 
         let request = AnalyzeIssueRequest(
@@ -64,7 +78,8 @@ final class AIQuoteService: ObservableObject {
             additionalNotes: additionalNotes,
             customerName: customerName,
             customerPhone: customerPhone,
-            customerAddress: customerAddress
+            customerAddress: customerAddress,
+            allowOverride: allowOverride ? true : nil
         )
 
         do {
@@ -85,6 +100,15 @@ final class AIQuoteService: ObservableObject {
             }
             guard (200...299).contains(http.statusCode) else {
                 if let edgeError = try? JSONDecoder().decode(EdgeError.self, from: data) {
+                    if let gateStatus = edgeError.gateStatus {
+                        await MainActor.run {
+                            self.lastGatingFeedback = GatingFeedback(
+                                status: gateStatus,
+                                reasons: edgeError.gateReasons ?? [],
+                                canOverride: edgeError.canOverride ?? false
+                            )
+                        }
+                    }
                     throw NSError(
                         domain: "AIQuoteService",
                         code: http.statusCode,
@@ -97,8 +121,16 @@ final class AIQuoteService: ObservableObject {
                 let serverMessage = String(data: data, encoding: .utf8) ?? "Server error"
                 throw NSError(domain: "AIQuoteService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: serverMessage])
             }
-
             let decoded = try JSONDecoder().decode(AnalyzeResponse.self, from: data)
+            if let status = decoded.gateStatus {
+                await MainActor.run {
+                    self.lastGatingFeedback = GatingFeedback(
+                        status: status,
+                        reasons: decoded.gateReasons ?? [],
+                        canOverride: decoded.canOverride ?? false
+                    )
+                }
+            }
             return decoded.toQuoteResult(voiceTranscript: voiceTranscript)
         } catch is CancellationError {
             await MainActor.run {

@@ -9,6 +9,7 @@ type AnalyzeRequest = {
   customerName?: string;
   customerPhone?: string;
   customerAddress?: string;
+  allowOverride?: boolean;
 };
 
 type AiDiagnosis = {
@@ -24,6 +25,8 @@ type PricingConfig = {
   laborRatePerHour: number;
   taxRate: number;
 };
+
+type GateStatus = "pass" | "warning" | "blocked";
 
 class AppError extends Error {
   status: number;
@@ -64,6 +67,9 @@ const admin = createClient(supabaseUrl, serviceRoleKey, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
 
+const MIN_TEXT_SIGNAL_LEN = 12;
+const MIN_CONFIDENCE = 0.75;
+
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -94,6 +100,12 @@ function createId(prefix: string): string {
 
 function round2(value: number): number {
   return Math.round(value * 100) / 100;
+}
+
+function hasMeaningfulTextSignal(voiceTranscript?: string, additionalNotes?: string): boolean {
+  const transcript = (voiceTranscript ?? "").trim();
+  const notes = (additionalNotes ?? "").trim();
+  return transcript.length >= MIN_TEXT_SIGNAL_LEN || notes.length >= MIN_TEXT_SIGNAL_LEN;
 }
 
 function base64ToBytes(base64OrDataUrl: string): Uint8Array {
@@ -268,6 +280,7 @@ Deno.serve(async (req) => {
     if (userError || !userData.user) throw new AppError(401, "unauthorized", "Unauthorized");
 
     const body = (await req.json()) as AnalyzeRequest;
+    const allowOverride = body.allowOverride === true;
     const images = body.images ?? [];
     if (!Array.isArray(images) || images.length === 0) throw new AppError(400, "image_required", "At least one image required");
     if (images.length > 5) throw new AppError(400, "too_many_images", "Maximum 5 images allowed");
@@ -291,10 +304,37 @@ Deno.serve(async (req) => {
     const categoryList = industryRows.map((r) => `${r.category} > ${r.subcategory}`);
     const diagnosis = await identifyIssueWithAi(categoryList, images, body.voiceTranscript, body.additionalNotes);
 
-    let matched = industryRows.find((r) => r.category === diagnosis.category && r.subcategory === diagnosis.subcategory);
+    const gateReasons: string[] = [];
+    if (!hasMeaningfulTextSignal(body.voiceTranscript, body.additionalNotes)) {
+      gateReasons.push("Description is too short. Add more detail by voice or notes.");
+    }
+    if (Number(diagnosis.confidence ?? 0) < MIN_CONFIDENCE) {
+      gateReasons.push(`Low diagnosis confidence (${round2(Number(diagnosis.confidence ?? 0))}). Retake photo or add details.`);
+    }
+
+    const exactMatch = industryRows.find((r) => r.category === diagnosis.category && r.subcategory === diagnosis.subcategory);
+    const fuzzyQuery = `${diagnosis.category} ${diagnosis.subcategory}`.toLowerCase();
+    const fuzzyMatch = industryRows.find((r) => fuzzyQuery.includes(String(r.subcategory).toLowerCase()));
+    const matched = exactMatch ?? fuzzyMatch ?? null;
+
     if (!matched) {
-      const q = `${diagnosis.category} ${diagnosis.subcategory}`.toLowerCase();
-      matched = industryRows.find((r) => q.includes(String(r.subcategory).toLowerCase())) ?? industryRows[0];
+      return jsonResponse({
+        error: "Could not confidently match this issue to a pricing category.",
+        code: "category_match_failed",
+        gateStatus: "blocked" as GateStatus,
+        gateReasons: ["Issue could not be mapped to a supported plumbing category. Retake photo and provide clearer details."],
+        canOverride: false,
+      }, 422);
+    }
+
+    if (gateReasons.length > 0 && !allowOverride) {
+      return jsonResponse({
+        error: "Input quality is too weak for a reliable quote.",
+        code: "input_quality_warning",
+        gateStatus: "warning" as GateStatus,
+        gateReasons,
+        canOverride: true,
+      }, 422);
     }
 
     const mapRowsRes = await admin
@@ -487,6 +527,9 @@ Deno.serve(async (req) => {
       quoteId: estimateId,
       estimateNumber,
       estimateId,
+      gateStatus: gateReasons.length > 0 ? ("warning" as GateStatus) : ("pass" as GateStatus),
+      gateReasons,
+      canOverride: gateReasons.length > 0,
       pricingSource: {
         benchmark: matched.source ?? null,
         benchmarkUrls: Array.isArray(matched.source_urls) ? matched.source_urls : [],
