@@ -5,6 +5,7 @@ final class QuoteEditViewModel: ObservableObject {
     @Published var editableLineItems: [EditableLineItem]
     @Published var laborHours: Double
     @Published var laborRate: Double
+    @Published var taxRate: Double
     @Published var isSaving = false
     @Published var error: String?
 
@@ -16,7 +17,9 @@ final class QuoteEditViewModel: ObservableObject {
         self.estimateId = estimateId
         self.optionId = optionId
         self.originalQuote = quote
-        self.editableLineItems = quote.lineItems.map { item in
+        self.editableLineItems = quote.lineItems
+            .filter { !$0.isLabor }
+            .map { item in
             EditableLineItem(
                 id: item.id,
                 name: item.partName,
@@ -27,23 +30,30 @@ final class QuoteEditViewModel: ObservableObject {
             )
         }
         self.laborHours = quote.laborHours
-        self.laborRate = quote.laborRate
+        self.laborRate = quote.laborRate > 0 ? quote.laborRate : 95
+        self.taxRate = 0.08
+
+        Task {
+            await loadCompanyPricing()
+        }
     }
 
     var partsTotal: Double {
-        editableLineItems.reduce(0) { $0 + $1.lineTotal }
+        rounded2(editableLineItems.reduce(0) { sum, item in
+            sum + rounded2(rounded2(item.unitPrice) * max(0, item.quantity))
+        })
     }
 
     var laborTotal: Double {
-        laborHours * laborRate
+        rounded2(max(0, laborHours) * laborRate)
     }
 
     var tax: Double {
-        partsTotal * 0.08
+        rounded2(partsTotal * taxRate)
     }
 
     var total: Double {
-        partsTotal + laborTotal + tax
+        rounded2(partsTotal + laborTotal + tax)
     }
 
     func addLineItem() {
@@ -63,64 +73,119 @@ final class QuoteEditViewModel: ObservableObject {
         editableLineItems.remove(atOffsets: offsets)
     }
 
-    func save() async -> Bool {
+    func save() async -> Quote? {
         isSaving = true
         error = nil
         defer { isSaving = false }
 
         do {
+            let partItems = editableLineItems.map(makeUpdateLineItem)
+            let laborLineItem = EstimateService.UpdateOptionLineItem(
+                id: nil,
+                name: "Labor",
+                description: "\(String(format: "%.2f", laborHours)) hours @ \(String(format: "%.2f", laborRate))/hr",
+                unitPrice: laborRate,
+                quantity: max(0, laborHours),
+                unit: "hour"
+            )
             let payload = EstimateService.UpdateOptionPayload(
                 optionId: optionId,
-                lineItems: editableLineItems.map { item in
-                    EstimateService.UpdateOptionLineItem(
-                        id: item.id,
-                        name: item.name,
-                        description: item.description,
-                        unitPrice: item.unitPrice,
-                        quantity: item.quantity,
-                        unit: item.unit
-                    )
-                },
+                lineItems: partItems + [laborLineItem],
                 laborHours: laborHours
             )
-            try await EstimateService.shared.updateOptions(
+            let response = try await EstimateService.shared.updateOptions(
                 estimateId: estimateId,
                 payload: payload
             )
-            return true
+
+            guard let option = response.options.first(where: { $0.id == optionId }) else {
+                return buildUpdatedQuote()
+            }
+
+            return buildUpdatedQuote(using: option)
         } catch {
             ErrorLogger.log(
                 message: "Quote edit save failed: \(error.localizedDescription)",
                 context: ["source": "QuoteEditViewModel.save", "estimateId": estimateId, "optionId": optionId]
             )
             self.error = error.localizedDescription
-            return false
+            return nil
         }
     }
 
     func buildUpdatedQuote() -> Quote {
-        let updatedLineItems = editableLineItems.map { item in
+        let fallback = EstimateService.UpdateOptionsResponse.UpdatedOption(
+            id: optionId,
+            tier: originalQuote.tier,
+            subtotal: partsTotal,
+            laborTotal: laborTotal,
+            tax: tax,
+            total: total,
+            laborHours: laborHours,
+            laborRate: laborRate
+        )
+        return buildUpdatedQuote(using: fallback)
+    }
+
+    private func buildUpdatedQuote(using option: EstimateService.UpdateOptionsResponse.UpdatedOption) -> Quote {
+        var updatedLineItems = editableLineItems.map { item in
             QuoteLineItem(
                 id: item.id,
                 partName: item.name,
                 partNumber: item.id,
                 brand: "Custom",
-                unitPrice: item.unitPrice,
-                quantity: item.quantity,
+                unitPrice: rounded2(item.unitPrice),
+                quantity: max(0, item.quantity),
                 category: "part"
             )
         }
 
+        updatedLineItems.append(
+            QuoteLineItem(
+                partName: "Labor",
+                partNumber: "labor",
+                brand: "\(String(format: "%.2f", option.laborHours)) hours @ \(String(format: "%.2f", option.laborRate))/hr",
+                unitPrice: option.laborRate,
+                quantity: option.laborHours,
+                category: "labor"
+            )
+        )
+
         return Quote(
             id: originalQuote.id,
-            optionId: originalQuote.optionId,
+            optionId: option.id,
             tier: originalQuote.tier,
             lineItems: updatedLineItems,
-            laborHours: laborHours,
-            laborRate: laborRate,
+            laborHours: option.laborHours,
+            laborRate: option.laborRate,
+            laborTotal: option.laborTotal,
+            partsTotal: option.subtotal,
+            tax: option.tax,
+            total: option.total,
             warrantyMonths: originalQuote.warrantyMonths,
             solutionDescription: originalQuote.solutionDescription,
             notes: originalQuote.notes
         )
+    }
+
+    private func makeUpdateLineItem(_ item: EditableLineItem) -> EstimateService.UpdateOptionLineItem {
+        EstimateService.UpdateOptionLineItem(
+            id: item.id,
+            name: item.name,
+            description: item.description,
+            unitPrice: rounded2(item.unitPrice),
+            quantity: max(0, item.quantity),
+            unit: item.unit
+        )
+    }
+
+    private func rounded2(_ value: Double) -> Double {
+        (value * 100).rounded() / 100
+    }
+
+    private func loadCompanyPricing() async {
+        let settings = await CompanySettingsService.shared.fetchCompanySettings()
+        laborRate = rounded2(settings.laborRatePerHour)
+        taxRate = max(0, settings.taxRate)
     }
 }

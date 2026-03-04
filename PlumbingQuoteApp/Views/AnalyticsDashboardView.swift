@@ -13,6 +13,7 @@ struct AnalyticsDashboardView: View {
                     }
                 }
                 .pickerStyle(.segmented)
+                .tint(AppTheme.accent)
                 .onChange(of: viewModel.selectedRange) { _ in
                     Task { await viewModel.load() }
                 }
@@ -24,7 +25,10 @@ struct AnalyticsDashboardView: View {
             }
             .padding()
         }
+        .background(AppTheme.bg)
         .navigationTitle("Analytics")
+        .toolbarBackground(AppTheme.bg, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
         .refreshable {
             await viewModel.load()
         }
@@ -47,7 +51,7 @@ struct AnalyticsDashboardView: View {
         return VStack(spacing: 10) {
             cardRow(title: "Total Quotes", value: "\(totalQuotes)")
             cardRow(title: "Acceptance Rate", value: String(format: "%.1f%%", acceptanceRate))
-            cardRow(title: "Revenue", value: formatCurrency(revenue))
+            cardRow(title: "Revenue", value: CurrencyFormatter.usd(revenue))
         }
     }
 
@@ -61,13 +65,14 @@ struct AnalyticsDashboardView: View {
                     x: .value("Day", item.date, unit: .day),
                     y: .value("Quotes", item.totalQuotes)
                 )
-                .foregroundStyle(.blue)
+                .foregroundStyle(AppTheme.accent)
             }
             .frame(height: 220)
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
+        .background(AppTheme.surface)
         .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(color: .black.opacity(0.06), radius: 4, y: 1)
     }
 
     private var categoryChart: some View {
@@ -98,8 +103,9 @@ struct AnalyticsDashboardView: View {
             .frame(height: 220)
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
+        .background(AppTheme.surface)
         .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(color: .black.opacity(0.06), radius: 4, y: 1)
     }
 
     private var technicianTable: some View {
@@ -114,23 +120,24 @@ struct AnalyticsDashboardView: View {
                             .font(.subheadline.weight(.semibold))
                         Text("\(tech.totalQuotes) quotes")
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(AppTheme.muted)
                     }
                     Spacer()
                     VStack(alignment: .trailing, spacing: 2) {
                         Text(String(format: "%.1f%%", tech.acceptanceRate))
                             .font(.subheadline.weight(.semibold))
-                        Text(formatCurrency(tech.avgQuoteValue))
+                        Text(CurrencyFormatter.usd(tech.avgQuoteValue))
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(AppTheme.muted)
                     }
                 }
                 .padding(.vertical, 6)
             }
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
+        .background(AppTheme.surface)
         .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(color: .black.opacity(0.06), radius: 4, y: 1)
     }
 
     private func cardRow(title: String, value: String) -> some View {
@@ -142,16 +149,11 @@ struct AnalyticsDashboardView: View {
                 .font(.headline)
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
+        .background(AppTheme.surface)
         .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(color: .black.opacity(0.06), radius: 4, y: 1)
     }
 
-    private func formatCurrency(_ value: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = "USD"
-        return formatter.string(from: NSNumber(value: value)) ?? "$\(value)"
-    }
 }
 
 #Preview {

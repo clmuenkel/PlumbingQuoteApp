@@ -4,7 +4,11 @@ import Supabase
 @MainActor
 final class AuthViewModel: ObservableObject {
     /// Set to `true` to skip the login screen and auto sign-in as QA user for quick testing. Set to `false` for production.
+    #if DEBUG
     static let skipAuthForTesting = true
+    #else
+    static let skipAuthForTesting = false
+    #endif
 
     @Published var isAuthenticated = false
     @Published var currentTechnician: Technician?
@@ -14,6 +18,12 @@ final class AuthViewModel: ObservableObject {
     private let supabase = SupabaseService.shared.client
 
     init() {
+        if let configurationError = SupabaseService.shared.configurationError {
+            error = configurationError
+            isAuthenticated = false
+            return
+        }
+
         Task {
             if Self.skipAuthForTesting {
                 await signIn(email: "qa@plumbquote.test", password: "QATest")
@@ -24,6 +34,13 @@ final class AuthViewModel: ObservableObject {
     }
 
     func refreshSession() async {
+        if let configurationError = SupabaseService.shared.configurationError {
+            error = configurationError
+            isAuthenticated = false
+            currentTechnician = nil
+            return
+        }
+
         isLoading = true
         defer { isLoading = false }
 
@@ -42,6 +59,12 @@ final class AuthViewModel: ObservableObject {
     }
 
     func signIn(email: String, password: String) async {
+        if let configurationError = SupabaseService.shared.configurationError {
+            error = configurationError
+            isAuthenticated = false
+            return
+        }
+
         guard !email.isEmpty, !password.isEmpty else {
             error = "Enter both email and password."
             return

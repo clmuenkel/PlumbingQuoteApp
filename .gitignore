@@ -7,3 +7,7 @@ Config/Secrets.xcconfig
 node_modules/
 **/xcuserdata/
 *.xcuserdatad/
+__pycache__/
+*.pyc
+DerivedData/
+build/

@@ -1,16 +1,24 @@
 import SwiftUI
+import UIKit
 
 struct HomeView: View {
     private enum Field {
+        case name
         case phone
+        case address
+        case notes
     }
 
     @StateObject private var viewModel = QuoteViewModel()
     @StateObject private var networkMonitor = NetworkMonitor.shared
     @State private var showingMenu = false
     @State private var showClearConfirm = false
-    @State private var showCustomerInfo = false
     @State private var animateRecordingPulse = false
+    @State private var showRecordingSaved = false
+    @State private var isKeyboardVisible = false
+    @State private var easterEggTapCount = 0
+    @State private var lastEasterEggTapAt = Date.distantPast
+    @State private var showDuckEasterEgg = false
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @FocusState private var focusedField: Field?
@@ -27,12 +35,18 @@ struct HomeView: View {
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(10)
-                        .background(Color.orange.opacity(0.15))
-                        .foregroundStyle(.orange)
+                        .background(AppTheme.warning.opacity(0.14))
+                        .foregroundStyle(AppTheme.text)
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
 
                     MultiImagePicker(images: $viewModel.capturedImages, maxImages: 5)
+                    if !viewModel.capturedImages.isEmpty {
+                        Text("\(viewModel.capturedImages.count)/5 photos")
+                            .font(.caption)
+                            .foregroundStyle(AppTheme.muted)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
 
                     customerInfoSection
 
@@ -46,7 +60,7 @@ struct HomeView: View {
                                     .font(.subheadline.weight(.semibold))
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            .foregroundStyle(.red)
+                            .foregroundStyle(AppTheme.error)
 
                             if viewModel.canSubmit, !viewModel.isAnalyzing {
                                 Button {
@@ -59,7 +73,7 @@ struct HomeView: View {
                             }
                         }
                         .padding(10)
-                        .background(Color.red.opacity(0.12))
+                        .background(AppTheme.error.opacity(0.11))
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                         .padding(.top, 4)
                     }
@@ -67,16 +81,27 @@ struct HomeView: View {
                 .padding(contentPadding)
             }
             .scrollDismissesKeyboard(.interactively)
-            .background(Color(.systemBackground))
+            .background(AppTheme.bg)
             .safeAreaInset(edge: .bottom) {
-                actionArea
-                    .padding(.horizontal, contentPadding)
-                    .padding(.top, 10)
-                    .padding(.bottom, 8)
-                    .background(.ultraThinMaterial)
+                if !isKeyboardVisible {
+                    actionArea
+                        .padding(.horizontal, contentPadding)
+                        .padding(.top, 10)
+                        .padding(.bottom, 8)
+                        .background(AppTheme.bgAlt)
+                        .overlay(alignment: .top) {
+                            Rectangle()
+                                .fill(AppTheme.accentLight.opacity(0.45))
+                                .frame(height: 1)
+                        }
+                }
             }
             .navigationTitle("PlumbQuote")
             .navigationBarTitleDisplayMode(.large)
+            .toolbarBackground(AppTheme.bg, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarColorScheme(.light, for: .navigationBar)
+            .toolbarColorScheme(.light, for: .bottomBar)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
@@ -85,7 +110,8 @@ struct HomeView: View {
                         Image(systemName: "line.3.horizontal")
                             .font(.headline)
                             .frame(width: menuButtonSize, height: menuButtonSize)
-                            .background(Color(.secondarySystemBackground))
+                            .background(AppTheme.surface2)
+                            .foregroundStyle(AppTheme.text)
                             .clipShape(Circle())
                     }
                 }
@@ -140,29 +166,75 @@ struct HomeView: View {
                     QuoteResultView(
                         result: result,
                         selectedTier: $viewModel.selectedTier,
-                        onDismiss: { viewModel.showQuoteResult = false }
+                        onDismiss: { viewModel.showQuoteResult = false },
+                        onQuoteSaved: { tier, updatedQuote in
+                            viewModel.quoteResult?.updateQuote(updatedQuote, for: tier)
+                        }
                     )
                 }
             }
-            .alert(
-                viewModel.developerAlert?.title ?? "Developer Mode",
-                isPresented: Binding(
-                    get: { viewModel.developerAlert != nil },
-                    set: { showing in
-                        if !showing {
-                            viewModel.developerAlert = nil
-                        }
+            .overlay(alignment: .top) {
+                Rectangle()
+                    .fill(.clear)
+                    .frame(width: 150, height: 44)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        handleTitleTapEasterEgg()
                     }
-                ),
-                actions: {
-                    Button("OK", role: .cancel) {
-                        viewModel.developerAlert = nil
-                    }
-                },
-                message: {
-                    Text(viewModel.developerAlert?.message ?? "Unknown developer error.")
+                    .padding(.top, 2)
+            }
+            .overlay(alignment: .topTrailing) {
+                if showDuckEasterEgg {
+                    Text("🦆")
+                        .font(.system(size: 36))
+                        .padding(.trailing, 18)
+                        .padding(.top, 8)
+                        .transition(.move(edge: .top).combined(with: .opacity))
                 }
-            )
+            }
+            .overlay(alignment: .top) {
+                if let developerAlert = viewModel.developerAlert {
+                    VStack(spacing: 4) {
+                        Text(developerAlert.title)
+                            .font(.caption.weight(.semibold))
+                        Text(developerAlert.message)
+                            .font(.caption2)
+                            .multilineTextAlignment(.center)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 10)
+                    .frame(maxWidth: .infinity)
+                    .background(AppTheme.warning.opacity(0.95))
+                    .foregroundStyle(AppTheme.text)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .padding(.horizontal, 16)
+                    .padding(.top, 4)
+                }
+            }
+            .overlay(alignment: .bottom) {
+                if showRecordingSaved {
+                    Text("Recording saved")
+                        .font(.caption.weight(.semibold))
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(AppTheme.success.opacity(0.95))
+                        .foregroundStyle(.white)
+                        .clipShape(Capsule())
+                        .padding(.bottom, 88)
+                }
+            }
+            .onChange(of: viewModel.developerAlert?.id) { _ in
+                guard viewModel.developerAlert != nil else { return }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+                    viewModel.developerAlert = nil
+                }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
+                isKeyboardVisible = true
+            }
+            .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+                isKeyboardVisible = false
+            }
         }
     }
 
@@ -180,7 +252,7 @@ struct HomeView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: primaryButtonHeight)
-                .background(viewModel.canSubmit ? Color.blue : Color.gray.opacity(0.4))
+                .background(viewModel.canSubmit ? AppTheme.accent : AppTheme.muted.opacity(0.4))
                 .foregroundStyle(.white)
                 .clipShape(RoundedRectangle(cornerRadius: 14))
             }
@@ -190,13 +262,13 @@ struct HomeView: View {
                 if !viewModel.generationStep.isEmpty {
                     Text(viewModel.generationStep)
                         .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(AppTheme.muted)
                 }
                 Button("Cancel") {
                     viewModel.cancelQuoteGeneration()
                 }
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.red)
+                .foregroundStyle(AppTheme.error)
             }
         }
     }
@@ -204,42 +276,49 @@ struct HomeView: View {
     @ViewBuilder
     private var voiceSection: some View {
         VStack(spacing: 14) {
-            ZStack {
-                Circle()
-                    .stroke(Color.red.opacity(0.45), lineWidth: 2)
-                    .frame(width: recordButtonDiameter + 20, height: recordButtonDiameter + 20)
-                    .scaleEffect(viewModel.voiceService.isRecording && animateRecordingPulse ? 1.08 : 0.9)
-                    .opacity(viewModel.voiceService.isRecording ? (animateRecordingPulse ? 0.15 : 0.5) : 0)
-                    .animation(
-                        viewModel.voiceService.isRecording
-                        ? .easeInOut(duration: 0.9).repeatForever(autoreverses: true)
-                        : .easeInOut(duration: 0.2),
-                        value: animateRecordingPulse
-                    )
-
-                Circle()
-                    .fill(Color.red)
-                    .frame(width: recordButtonDiameter, height: recordButtonDiameter)
-
-                Image(systemName: viewModel.voiceService.isRecording ? "stop.fill" : "mic.fill")
-                    .font(.system(size: recordButtonIconSize, weight: .semibold))
-                    .foregroundStyle(.white)
-            }
-            .contentShape(Circle())
-            .onTapGesture {
+            Button {
                 viewModel.voiceService.toggleRecording()
+            } label: {
+                ZStack {
+                    Circle()
+                        .stroke(AppTheme.accentLight.opacity(0.8), lineWidth: 2)
+                        .frame(width: recordButtonDiameter + 20, height: recordButtonDiameter + 20)
+                        .scaleEffect(viewModel.voiceService.isRecording && animateRecordingPulse ? 1.08 : 0.9)
+                        .opacity(viewModel.voiceService.isRecording ? (animateRecordingPulse ? 0.15 : 0.5) : 0)
+                        .animation(
+                            viewModel.voiceService.isRecording
+                            ? .easeInOut(duration: 0.9).repeatForever(autoreverses: true)
+                            : .easeInOut(duration: 0.2),
+                            value: animateRecordingPulse
+                        )
+
+                    Circle()
+                        .fill(AppTheme.accent)
+                        .frame(width: recordButtonDiameter, height: recordButtonDiameter)
+
+                    Image(systemName: viewModel.voiceService.isRecording ? "stop.fill" : "mic.fill")
+                        .font(.system(size: recordButtonIconSize, weight: .semibold))
+                        .foregroundStyle(.white)
+                }
             }
+            .buttonStyle(.plain)
             .onChange(of: viewModel.voiceService.isRecording) { isRecording in
                 if isRecording {
                     animateRecordingPulse = true
                 } else {
                     animateRecordingPulse = false
+                    if viewModel.voiceService.hasTranscript {
+                        showRecordingSaved = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
+                            showRecordingSaved = false
+                        }
+                    }
                 }
             }
 
             Text(voiceStatusText)
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(AppTheme.muted)
                 .multilineTextAlignment(.center)
 
             waveformBars
@@ -251,18 +330,35 @@ struct HomeView: View {
                     .animation(.easeInOut(duration: 0.2), value: viewModel.voiceService.recordingSecondsRemaining)
             }
 
+            if !viewModel.voiceService.isAuthorized {
+                Button {
+                    guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+                    UIApplication.shared.open(url)
+                } label: {
+                    Label("Enable Speech Recognition in Settings", systemImage: "gear")
+                        .font(.caption.weight(.semibold))
+                }
+                .buttonStyle(.bordered)
+                .tint(AppTheme.accent)
+            }
+
             if viewModel.voiceService.hasTranscript {
                 Text(viewModel.voiceService.transcript)
                     .font(.callout)
+                    .foregroundStyle(AppTheme.text)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(12)
-                    .background(Color(.secondarySystemBackground))
+                    .background(AppTheme.surface2)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
 
                 voiceActionButtons
             }
         }
         .frame(maxWidth: .infinity)
+        .padding(16)
+        .background(AppTheme.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .shadow(color: .black.opacity(0.06), radius: 4, y: 1)
     }
 
     private var waveformBars: some View {
@@ -282,7 +378,7 @@ struct HomeView: View {
 
     private var voiceStatusText: String {
         if viewModel.voiceService.isRecording { return "Recording... Tap again to stop" }
-        if viewModel.voiceService.hasTranscript { return "Tap to continue recording" }
+        if viewModel.voiceService.hasTranscript { return "Tap to continue recording (new audio appends)" }
         return "Tap to record voice note"
     }
 
@@ -318,8 +414,8 @@ struct HomeView: View {
             .minimumScaleFactor(0.85)
             .frame(maxWidth: .infinity)
             .frame(minHeight: 42)
-            .background(Color(.secondarySystemBackground))
-            .foregroundStyle(.primary)
+            .background(AppTheme.surface2)
+            .foregroundStyle(AppTheme.text)
             .clipShape(RoundedRectangle(cornerRadius: 10))
         }
     }
@@ -334,55 +430,86 @@ struct HomeView: View {
                 .minimumScaleFactor(0.85)
                 .frame(maxWidth: .infinity)
                 .frame(minHeight: 42)
-                .background(Color(.secondarySystemBackground))
-                .foregroundStyle(.primary)
+                .background(AppTheme.surface2)
+                .foregroundStyle(AppTheme.text)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
         }
     }
 
     private var customerInfoSection: some View {
-        DisclosureGroup(isExpanded: $showCustomerInfo) {
-            VStack(spacing: 10) {
-                HStack(spacing: 10) {
-                    Image(systemName: "person")
-                        .foregroundStyle(.secondary)
-                    TextField("Customer name", text: $viewModel.customerName)
-                        .textInputAutocapitalization(.words)
-                }
-                .padding(10)
-                .background(Color(.secondarySystemBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-
-                HStack(spacing: 10) {
-                    Image(systemName: "phone")
-                        .foregroundStyle(.secondary)
-                    TextField("Phone", text: formattedPhoneBinding)
-                        .keyboardType(.phonePad)
-                        .focused($focusedField, equals: .phone)
-                }
-                .padding(10)
-                .background(Color(.secondarySystemBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-
-                HStack(spacing: 10) {
-                    Image(systemName: "map")
-                        .foregroundStyle(.secondary)
-                    TextField("Address", text: $viewModel.customerAddress)
-                        .textInputAutocapitalization(.words)
-                }
-                .padding(10)
-                .background(Color(.secondarySystemBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-            }
-            .padding(.top, 8)
-        } label: {
+        VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Image(systemName: "person.text.rectangle")
-                Text("Customer Info")
+                Text("Job Details")
                     .font(.subheadline.weight(.semibold))
+                Spacer()
+                Text("Optional")
+                    .font(.caption)
+                    .foregroundStyle(AppTheme.muted)
             }
-            .foregroundStyle(.primary)
+            .padding(.horizontal, 2)
+
+            HStack(spacing: 10) {
+                Image(systemName: "person")
+                    .foregroundStyle(AppTheme.muted)
+                TextField("Customer name", text: $viewModel.customerName)
+                    .textInputAutocapitalization(.words)
+                    .foregroundStyle(AppTheme.text)
+                    .focused($focusedField, equals: .name)
+            }
+            .padding(10)
+            .background(AppTheme.surface2)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+
+            HStack(spacing: 10) {
+                Image(systemName: "phone")
+                    .foregroundStyle(AppTheme.muted)
+                TextField("Phone", text: formattedPhoneBinding)
+                    .keyboardType(.phonePad)
+                    .foregroundStyle(AppTheme.text)
+                    .focused($focusedField, equals: .phone)
+            }
+            .padding(10)
+            .background(AppTheme.surface2)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+
+            HStack(spacing: 10) {
+                Image(systemName: "map")
+                    .foregroundStyle(AppTheme.muted)
+                TextField("Address", text: $viewModel.customerAddress)
+                    .textInputAutocapitalization(.words)
+                    .foregroundStyle(AppTheme.text)
+                    .focused($focusedField, equals: .address)
+            }
+            .padding(10)
+            .background(AppTheme.surface2)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+
+            ZStack(alignment: .topLeading) {
+                TextEditor(text: $viewModel.additionalNotes)
+                    .frame(minHeight: 96)
+                    .scrollContentBackground(.hidden)
+                    .foregroundStyle(AppTheme.text)
+                    .focused($focusedField, equals: .notes)
+                    .padding(.horizontal, 4)
+                    .padding(.vertical, 2)
+
+                if viewModel.additionalNotes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    Text("Any extra details about the job...")
+                        .font(.subheadline)
+                        .foregroundStyle(AppTheme.muted)
+                        .padding(.horizontal, 9)
+                        .padding(.vertical, 10)
+                        .allowsHitTesting(false)
+                }
+            }
+            .background(AppTheme.surface2)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
         }
+        .padding(16)
+        .background(AppTheme.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .shadow(color: .black.opacity(0.06), radius: 4, y: 1)
     }
 
     private var formattedPhoneBinding: Binding<String> {
@@ -415,9 +542,9 @@ struct HomeView: View {
 
     private var recordingRingColor: Color {
         let seconds = viewModel.voiceService.recordingSecondsRemaining
-        if seconds <= 5 { return .red }
-        if seconds <= 10 { return .yellow }
-        return viewModel.voiceService.isRecording ? .blue : .secondary
+        if seconds <= 5 { return AppTheme.error }
+        if seconds <= 10 { return AppTheme.warning }
+        return viewModel.voiceService.isRecording ? AppTheme.accent : AppTheme.muted
     }
 
     private var formattedRecordingTime: String {
@@ -451,6 +578,28 @@ struct HomeView: View {
 
     private var primaryButtonHeight: CGFloat {
         50
+    }
+
+    private func handleTitleTapEasterEgg() {
+        let now = Date()
+        if now.timeIntervalSince(lastEasterEggTapAt) > 2 {
+            easterEggTapCount = 0
+        }
+
+        easterEggTapCount += 1
+        lastEasterEggTapAt = now
+
+        guard easterEggTapCount >= 5 else { return }
+        easterEggTapCount = 0
+
+        withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
+            showDuckEasterEgg = true
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
+            withAnimation(.easeOut(duration: 0.25)) {
+                showDuckEasterEgg = false
+            }
+        }
     }
 }
 

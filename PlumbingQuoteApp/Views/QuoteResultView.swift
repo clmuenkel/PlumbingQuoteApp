@@ -4,6 +4,7 @@ struct QuoteResultView: View {
     let result: QuoteResult
     @Binding var selectedTier: QuoteTier
     let onDismiss: () -> Void
+    var onQuoteSaved: ((QuoteTier, Quote) -> Void)? = nil
 
     @State private var showShareSheet = false
     @State private var shareItems: [Any] = []
@@ -32,13 +33,14 @@ struct QuoteResultView: View {
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(10)
-                        .background(Color.orange.opacity(0.16))
-                        .foregroundStyle(.orange)
+                        .background(AppTheme.warning.opacity(0.16))
+                        .foregroundStyle(AppTheme.text)
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
                     tierCard(for: .good)
                     tierCard(for: .better)
                     tierCard(for: .best)
+                    pricingIntelligenceCard(for: quote(for: selectedTier))
 
                     if showBreakdown {
                         quoteBreakdownCard(for: quote(for: selectedTier))
@@ -49,7 +51,7 @@ struct QuoteResultView: View {
                     if let statusError {
                         Text(statusError)
                             .font(.caption)
-                            .foregroundStyle(.red)
+                            .foregroundStyle(AppTheme.error)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
@@ -57,9 +59,11 @@ struct QuoteResultView: View {
                 .padding(.top, 10)
                 .padding(.bottom, 20)
             }
-            .background(Color(.systemGroupedBackground))
+            .background(AppTheme.bgAlt)
             .navigationTitle("Your Options")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(AppTheme.bgAlt, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Close") { onDismiss() }
@@ -98,6 +102,7 @@ struct QuoteResultView: View {
                         tierName: selectedTier.rawValue,
                         onSaved: { updatedQuote in
                             quoteOverrides[editingTier] = updatedQuote
+                            onQuoteSaved?(editingTier, updatedQuote)
                             statusError = "Quote line items saved."
                         }
                     )
@@ -119,9 +124,9 @@ struct QuoteResultView: View {
         VStack(alignment: .leading, spacing: 12) {
             if let estimateNumber = result.estimateNumber {
                 HStack {
-                    Text("Quote #\(estimateNumber)")
+                    Text(formattedEstimateNumber(estimateNumber))
                         .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(AppTheme.muted)
                     Spacer()
                     Text(estimateStatus.displayName)
                         .font(.caption2.weight(.semibold))
@@ -136,31 +141,32 @@ struct QuoteResultView: View {
                 .font(.title3.weight(.semibold))
             Text(result.issue.description)
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundColor(AppTheme.muted)
 
             if let customerName = result.customerName, !customerName.isEmpty {
                 Text("Customer: \(customerName)")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(AppTheme.muted)
             }
 
             if let customerAddress = result.customerAddress, !customerAddress.isEmpty {
                 Text("Address: \(customerAddress)")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(AppTheme.muted)
             }
 
             if let transcript = result.voiceTranscript, !transcript.isEmpty, showBreakdown {
                 Divider()
                 Text(transcript)
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(AppTheme.muted)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(16)
-        .background(.background)
+        .background(AppTheme.surface)
         .clipShape(RoundedRectangle(cornerRadius: 14))
+        .shadow(color: .black.opacity(0.06), radius: 4, y: 1)
     }
 
     private func tierCard(for tier: QuoteTier) -> some View {
@@ -188,37 +194,38 @@ struct QuoteResultView: View {
                             .font(.caption.weight(.bold))
                             .padding(.horizontal, 10)
                             .padding(.vertical, 5)
-                            .background(Color.blue.opacity(0.14))
-                            .foregroundStyle(.blue)
+                            .background(AppTheme.accentLight.opacity(0.6))
+                            .foregroundStyle(AppTheme.accent)
                             .clipShape(Capsule())
                     }
                     Spacer()
-                    Text(formatCurrency(quote.computedTotal))
+                    Text(CurrencyFormatter.usd(quote.computedTotal))
                         .font(.title3.weight(.bold))
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(AppTheme.text)
                 }
 
                 Text(quote.solutionDescription)
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(AppTheme.muted)
                     .multilineTextAlignment(.leading)
 
                 Text("\(quote.warrantyMonths)-month warranty")
                     .font(.caption.weight(.medium))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(AppTheme.muted)
             }
             .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(.regularMaterial)
+            .background(AppTheme.surface)
             .clipShape(RoundedRectangle(cornerRadius: 14))
             .overlay(
                 RoundedRectangle(cornerRadius: 14)
-                    .fill(tier == .better ? Color.blue.opacity(0.06) : .clear)
+                    .fill(tier == .better ? AppTheme.accentLight.opacity(0.25) : .clear)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 14)
                     .stroke(selectedTier == tier ? tier.color : .clear, lineWidth: 2)
             )
+            .shadow(color: .black.opacity(0.05), radius: 4, y: 1)
         }
         .buttonStyle(.plain)
     }
@@ -235,10 +242,10 @@ struct QuoteResultView: View {
                             .font(.subheadline)
                         Text("\(item.brand) • \(item.partNumber)")
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(AppTheme.muted)
                     }
                     Spacer()
-                    Text(formatCurrency(item.unitPrice * item.quantity))
+                    Text(CurrencyFormatter.usd(item.unitPrice * item.quantity))
                         .font(.subheadline.weight(.medium))
                 }
             }
@@ -248,30 +255,109 @@ struct QuoteResultView: View {
             HStack {
                 Text("Parts")
                 Spacer()
-                Text(formatCurrency(quote.computedPartsTotal))
+                Text(CurrencyFormatter.usd(quote.computedPartsTotal))
             }
             HStack {
                 Text("Labor")
                 Spacer()
-                Text(formatCurrency(quote.computedLaborTotal))
+                Text(CurrencyFormatter.usd(quote.computedLaborTotal))
             }
             HStack {
                 Text("Tax")
                 Spacer()
-                Text(formatCurrency(quote.computedTax))
+                Text(CurrencyFormatter.usd(quote.computedTax))
             }
             HStack {
                 Text("Total")
                     .fontWeight(.bold)
                 Spacer()
-                Text(formatCurrency(quote.computedTotal))
+                Text(CurrencyFormatter.usd(quote.computedTotal))
                     .fontWeight(.bold)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(14)
-        .background(.regularMaterial)
+        .background(AppTheme.surface)
         .clipShape(RoundedRectangle(cornerRadius: 14))
+        .shadow(color: .black.opacity(0.05), radius: 4, y: 1)
+    }
+
+    private func pricingIntelligenceCard(for quote: Quote) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Pricing Intelligence")
+                .font(.headline)
+
+            HStack {
+                Text("Recommended")
+                Spacer()
+                Text(CurrencyFormatter.usd(quote.computedTotal))
+                    .font(.headline.weight(.semibold))
+            }
+
+            if let priceBookPrice = quote.priceBookPrice {
+                HStack {
+                    Text("Your price book")
+                    Spacer()
+                    Text(CurrencyFormatter.usd(priceBookPrice))
+                        .foregroundStyle(AppTheme.muted)
+                }
+            }
+
+            if let marketAverage = quote.marketAverage {
+                HStack {
+                    Text("DFW market average")
+                    Spacer()
+                    Text(CurrencyFormatter.usd(marketAverage))
+                        .foregroundStyle(AppTheme.muted)
+                }
+            }
+
+            if let marketRange = quote.marketRange {
+                HStack {
+                    Text("DFW market range")
+                    Spacer()
+                    Text("\(CurrencyFormatter.usd(marketRange.low)) - \(CurrencyFormatter.usd(marketRange.high))")
+                        .foregroundStyle(AppTheme.muted)
+                }
+            }
+
+            if let confidence = quote.confidenceScore {
+                HStack {
+                    Text("Confidence")
+                    Spacer()
+                    Text("\(Int((confidence * 100).rounded()))%")
+                        .foregroundStyle(confidence >= 0.8 ? AppTheme.success : AppTheme.warning)
+                }
+            }
+
+            if let marketPositionPercent = quote.marketPositionPercent {
+                Text(marketPositionPercent >= 0
+                     ? "You are \(Int(marketPositionPercent.rounded()))% above market average."
+                     : "You are \(Int(abs(marketPositionPercent).rounded()))% below market average.")
+                    .font(.caption)
+                    .foregroundStyle(AppTheme.muted)
+            }
+
+            if let reasoning = quote.reasoning, !reasoning.isEmpty {
+                Text(reasoning)
+                    .font(.caption)
+                    .foregroundStyle(AppTheme.muted)
+            }
+
+            if let flags = quote.validationFlags, !flags.isEmpty {
+                Divider()
+                ForEach(flags, id: \.self) { flag in
+                    Label(flag, systemImage: "exclamationmark.triangle.fill")
+                        .font(.caption)
+                        .foregroundStyle(AppTheme.warning)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(14)
+        .background(AppTheme.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .shadow(color: .black.opacity(0.05), radius: 4, y: 1)
     }
 
     private var actionButtons: some View {
@@ -296,7 +382,7 @@ struct QuoteResultView: View {
                     }
                     .frame(maxWidth: .infinity)
                     .frame(minHeight: primaryButtonHeight)
-                    .background(estimateStatus == .draft ? selectedTier.color : Color.green)
+                    .background(estimateStatus == .draft ? selectedTier.color : AppTheme.success)
                     .foregroundColor(.white)
                     .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
@@ -319,13 +405,13 @@ struct QuoteResultView: View {
         } label: {
             Label("Reject", systemImage: "xmark.circle")
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.red)
+                .foregroundStyle(AppTheme.error)
                 .lineLimit(1)
                 .minimumScaleFactor(0.85)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .frame(minHeight: 44)
                 .padding(.horizontal, 12)
-                .background(.regularMaterial)
+                .background(AppTheme.surface)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
         }
         .disabled(isUpdatingStatus)
@@ -338,13 +424,13 @@ struct QuoteResultView: View {
         } label: {
             Label("Edit Quote", systemImage: "square.and.pencil")
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.primary)
+                .foregroundStyle(AppTheme.text)
                 .lineLimit(1)
                 .minimumScaleFactor(0.85)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .frame(minHeight: 44)
                 .padding(.horizontal, 12)
-                .background(.regularMaterial)
+                .background(AppTheme.surface)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
         }
         .buttonStyle(.plain)
@@ -361,13 +447,13 @@ struct QuoteResultView: View {
                 systemImage: "list.bullet.rectangle"
             )
             .font(.subheadline.weight(.semibold))
-            .foregroundStyle(.primary)
+            .foregroundStyle(AppTheme.text)
             .lineLimit(1)
             .minimumScaleFactor(0.85)
             .frame(maxWidth: .infinity, alignment: .leading)
             .frame(minHeight: 44)
             .padding(.horizontal, 12)
-            .background(.regularMaterial)
+            .background(AppTheme.surface)
             .clipShape(RoundedRectangle(cornerRadius: 12))
         }
         .buttonStyle(.plain)
@@ -389,16 +475,9 @@ struct QuoteResultView: View {
         dynamicTypeSize.isAccessibilitySize ? 54 : 48
     }
 
-    private func formatCurrency(_ value: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = "USD"
-        return formatter.string(from: NSNumber(value: value)) ?? "$\(value)"
-    }
-    
     private func generateShareText() -> String {
         let quote = quote(for: selectedTier)
-        let quoteNumber = result.estimateNumber.map { "Quote #\($0)\n" } ?? ""
+        let quoteNumber = result.estimateNumber.map { "\(formattedEstimateNumber($0))\n" } ?? ""
         return """
 PlumbQuote - \(selectedTier.rawValue) Option
 \(quoteNumber)Issue: \(result.issue.subcategory)
@@ -408,10 +487,10 @@ Includes:
 \(quote.solutionDescription)
 
 \(result.customerName.map { "Customer: \($0)\n" } ?? "")\(result.customerAddress.map { "Address: \($0)\n" } ?? "")
-Parts: \(formatCurrency(quote.computedPartsTotal))
-Labor: \(formatCurrency(quote.computedLaborTotal))
-Tax: \(formatCurrency(quote.computedTax))
-Total: \(formatCurrency(quote.computedTotal))
+Parts: \(CurrencyFormatter.usd(quote.computedPartsTotal))
+Labor: \(CurrencyFormatter.usd(quote.computedLaborTotal))
+Tax: \(CurrencyFormatter.usd(quote.computedTax))
+Total: \(CurrencyFormatter.usd(quote.computedTotal))
 
 Warranty: \(quote.warrantyMonths) months
 """
@@ -472,6 +551,10 @@ Warranty: \(quote.warrantyMonths) months
 
     private func quote(for tier: QuoteTier) -> Quote {
         quoteOverrides[tier] ?? result.quote(for: tier)
+    }
+
+    private func formattedEstimateNumber(_ number: Int) -> String {
+        String(format: "Quote #%03d", number)
     }
 
     private func loadEstimateStatusIfNeeded() async {
@@ -561,5 +644,5 @@ struct ShareSheet: UIViewControllerRepresentable {
             voiceTranscript: "Kitchen faucet is leaking under the handle"
         ),
         selectedTier: .constant(.better)
-    ) { }
+    ) { } onQuoteSaved: { _, _ in }
 }

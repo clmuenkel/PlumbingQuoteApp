@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-02-25T22:48:42Z",
+  "generated_at": "2026-02-27T17:31:52Z",
   "sources": {
     "angi": [
       "https://www.angi.com/articles/plumber-cost.htm",
@@ -31,27 +31,12 @@
       "https://www.housecallpro.com/resources/marketing/how-to/how-to-price-plumbing-jobs/"
     ]
   },
-  "row_count": 432,
-  "error_count": 4,
+  "row_count": 513,
+  "error_count": 1,
   "errors": [
     {
       "source": "angi",
-      "url": "https://www.angi.com/articles/emergency-plumber-cost.htm",
-      "error": "The read operation timed out"
-    },
-    {
-      "source": "angi",
-      "url": "https://angi.com/articles/how-much-does-installing-or-replacing-plumbing-pipes-cost.htm",
-      "error": "The read operation timed out"
-    },
-    {
-      "source": "angi",
       "url": "https://www.angi.com/articles/cost-to-replace-drain-pipes-in-house.htm",
-      "error": "The read operation timed out"
-    },
-    {
-      "source": "angi",
-      "url": "https://angi.com/articles/sink-installation-cost.htm",
       "error": "The read operation timed out"
     }
   ],
@@ -156,6 +141,15 @@
       "raw_text": "| Apprentice | $45\u2013$90 per hour |"
     },
     {
+      "service": "Austin, Texas",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/emergency-plumber-cost.htm",
+      "price_low": 265.0,
+      "price_high": 1350.0,
+      "price_avg": 807.5,
+      "raw_text": "| Austin, Texas | $265\u2013$1,350 |"
+    },
+    {
       "service": "Backflow Preventer",
       "source": "angi",
       "source_url": "https://www.angi.com/articles/how-much-does-toilet-installation-cost.htm",
@@ -165,6 +159,24 @@
       "raw_text": "| Backflow Preventer | $20\u2013$150 |"
     },
     {
+      "service": "Ball",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/what-cost-replace-water-shut-valve-supplies-water-refrigerator.htm",
+      "price_low": 10.0,
+      "price_high": 20.0,
+      "price_avg": 15.0,
+      "raw_text": "| Ball | $10\u2013$20 |"
+    },
+    {
+      "service": "Bar sink",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/sink-installation-cost.htm",
+      "price_low": 250.0,
+      "price_high": 1000.0,
+      "price_avg": 625.0,
+      "raw_text": "| Bar sink | $250\u2013$1,000 |"
+    },
+    {
       "service": "Basement",
       "source": "angi",
       "source_url": "https://angi.com/articles/burst-pipe-repair-cost.htm",
@@ -172,6 +184,15 @@
       "price_high": 600.0,
       "price_avg": 400.0,
       "raw_text": "| Basement | $200\u2013$600 |"
+    },
+    {
+      "service": "Basement access",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/what-cost-replace-water-shut-valve-supplies-water-refrigerator.htm",
+      "price_low": 180.0,
+      "price_high": 220.0,
+      "price_avg": 200.0,
+      "raw_text": "| Basement access | $180\u2013$220 |"
     },
     {
       "service": "Bathroom",
@@ -185,11 +206,38 @@
     {
       "service": "Bathroom sink",
       "source": "angi",
+      "source_url": "https://www.angi.com/articles/plumber-cost-to-fix-leaky-faucet.htm",
+      "price_low": 60.0,
+      "price_high": 200.0,
+      "price_avg": 130.0,
+      "raw_text": "| Bathroom sink | $60 \u2013 $200 |"
+    },
+    {
+      "service": "Bathroom sink",
+      "source": "angi",
       "source_url": "https://www.angi.com/articles/plumber-cost.htm",
       "price_low": 200.0,
       "price_high": 1100.0,
       "price_avg": 650.0,
       "raw_text": "| Bathroom sink | $200\u2013$1,100 |"
+    },
+    {
+      "service": "Bathtub",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/plumber-cost-to-fix-leaky-faucet.htm",
+      "price_low": 60.0,
+      "price_high": 400.0,
+      "price_avg": 230.0,
+      "raw_text": "| Bathtub | $60 \u2013 $400 |"
+    },
+    {
+      "service": "Boston, Massachusetts",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/emergency-plumber-cost.htm",
+      "price_low": 300.0,
+      "price_high": 1650.0,
+      "price_avg": 975.0,
+      "raw_text": "| Boston, Massachusetts | $300\u2013$1,650 |"
     },
     {
       "service": "Bradford White\u00ae",
@@ -201,6 +249,33 @@
       "raw_text": "| Bradford White\u00ae | $400\u2013$3,000 |"
     },
     {
+      "service": "Buried (deep)",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/what-cost-replace-water-shut-valve-supplies-water-refrigerator.htm",
+      "price_low": 240.0,
+      "price_high": 1000.0,
+      "price_avg": 620.0,
+      "raw_text": "| Buried (deep) | $240\u2013$1,000 |"
+    },
+    {
+      "service": "Buried (shallow)",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/what-cost-replace-water-shut-valve-supplies-water-refrigerator.htm",
+      "price_low": 210.0,
+      "price_high": 420.0,
+      "price_avg": 315.0,
+      "raw_text": "| Buried (shallow) | $210\u2013$420 |"
+    },
+    {
+      "service": "Cartridge",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/plumber-cost-to-fix-leaky-faucet.htm",
+      "price_low": 10.0,
+      "price_high": 100.0,
+      "price_avg": 55.0,
+      "raw_text": "| Cartridge | $10 \u2013 $100 |"
+    },
+    {
       "service": "Cast iron",
       "source": "angi",
       "source_url": "https://angi.com/articles/burst-pipe-repair-cost.htm",
@@ -210,6 +285,51 @@
       "raw_text": "| Cast iron | $10\u2013$30 | $160\u2013$280 |"
     },
     {
+      "service": "Cast Iron",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/sink-installation-cost.htm",
+      "price_low": 200.0,
+      "price_high": 900.0,
+      "price_avg": 550.0,
+      "raw_text": "| Cast Iron | $200\u2013$900 |"
+    },
+    {
+      "service": "Ceramic disk",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/plumber-cost-to-fix-leaky-faucet.htm",
+      "price_low": 20.0,
+      "price_high": 50.0,
+      "price_avg": 35.0,
+      "raw_text": "| Ceramic disk | $20 \u2013 $50 |"
+    },
+    {
+      "service": "Chicago",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/how-much-does-installing-or-replacing-plumbing-pipes-cost.htm",
+      "price_low": 1430.0,
+      "price_high": 1430.0,
+      "price_avg": 1430.0,
+      "raw_text": "| Chicago | $1,430 |"
+    },
+    {
+      "service": "Chicago, Illinois",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/emergency-plumber-cost.htm",
+      "price_low": 300.0,
+      "price_high": 1575.0,
+      "price_avg": 937.5,
+      "raw_text": "| Chicago, Illinois | $300\u2013$1,575 |"
+    },
+    {
+      "service": "Cincinnati, Ohio",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/emergency-plumber-cost.htm",
+      "price_low": 265.0,
+      "price_high": 1350.0,
+      "price_avg": 807.5,
+      "raw_text": "| Cincinnati, Ohio | $265\u2013$1,350 |"
+    },
+    {
       "service": "Clearing Clogs/Drain Snaking",
       "source": "angi",
       "source_url": "https://www.angi.com/articles/plumber-cost.htm",
@@ -217,6 +337,24 @@
       "price_high": 500.0,
       "price_avg": 297.5,
       "raw_text": "| Clearing Clogs/Drain Snaking | $95\u2013$500 |"
+    },
+    {
+      "service": "Composite",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/sink-installation-cost.htm",
+      "price_low": 300.0,
+      "price_high": 600.0,
+      "price_avg": 450.0,
+      "raw_text": "| Composite | $300\u2013$600 |"
+    },
+    {
+      "service": "Console",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/sink-installation-cost.htm",
+      "price_low": 400.0,
+      "price_high": 1250.0,
+      "price_avg": 825.0,
+      "raw_text": "| Console | $400\u2013$1,250 |"
     },
     {
       "service": "Converting a tank-style water heater to a tankless system",
@@ -237,6 +375,15 @@
       "raw_text": "| Copper | $2\u2013$15 | $150\u2013$275 |"
     },
     {
+      "service": "Copper",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/sink-installation-cost.htm",
+      "price_low": 400.0,
+      "price_high": 4000.0,
+      "price_avg": 2200.0,
+      "raw_text": "| Copper | $400\u2013$4,000 |"
+    },
+    {
       "service": "Copper Pipes",
       "source": "angi",
       "source_url": "https://www.angi.com/articles/plumber-cost.htm",
@@ -244,6 +391,15 @@
       "price_high": 12.0,
       "price_avg": 8.0,
       "raw_text": "| Copper Pipes | $4\u2013$12 per linear foot |"
+    },
+    {
+      "service": "Corner",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/sink-installation-cost.htm",
+      "price_low": 480.0,
+      "price_high": 1350.0,
+      "price_avg": 915.0,
+      "raw_text": "| Corner | $480\u2013$1,350 |"
     },
     {
       "service": "CPVC Pipes",
@@ -255,6 +411,33 @@
       "raw_text": "| CPVC Pipes | $1.50\u2013$3.25 per linear foot |"
     },
     {
+      "service": "Dallas",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/how-much-does-installing-or-replacing-plumbing-pipes-cost.htm",
+      "price_low": 970.0,
+      "price_high": 970.0,
+      "price_avg": 970.0,
+      "raw_text": "| Dallas | $970 |"
+    },
+    {
+      "service": "Denver, Colorado",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/emergency-plumber-cost.htm",
+      "price_low": 300.0,
+      "price_high": 1575.0,
+      "price_avg": 937.5,
+      "raw_text": "| Denver, Colorado | $300\u2013$1,575 |"
+    },
+    {
+      "service": "Dishwasher",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/how-much-does-installing-or-replacing-plumbing-pipes-cost.htm",
+      "price_low": 400.0,
+      "price_high": 650.0,
+      "price_avg": 525.0,
+      "raw_text": "| Dishwasher | $400\u2013$650 |"
+    },
+    {
       "service": "Double Cyclone",
       "source": "angi",
       "source_url": "https://www.angi.com/articles/how-much-does-toilet-installation-cost.htm",
@@ -262,6 +445,15 @@
       "price_high": 400.0,
       "price_avg": 400.0,
       "raw_text": "| Double Cyclone | $400 |"
+    },
+    {
+      "service": "Drop-in",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/sink-installation-cost.htm",
+      "price_low": 240.0,
+      "price_high": 1250.0,
+      "price_avg": 745.0,
+      "raw_text": "| Drop-in | $240\u2013$1,250 |"
     },
     {
       "service": "Dual-Flush",
@@ -291,6 +483,24 @@
       "raw_text": "| Emergency fees | $300\u2013$400 |"
     },
     {
+      "service": "Evening",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/emergency-plumber-cost.htm",
+      "price_low": 60.0,
+      "price_high": 300.0,
+      "price_avg": 180.0,
+      "raw_text": "| Evening | $60\u2013$300 |"
+    },
+    {
+      "service": "Farmhouse",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/sink-installation-cost.htm",
+      "price_low": 1000.0,
+      "price_high": 4000.0,
+      "price_avg": 2500.0,
+      "raw_text": "| Farmhouse | $1,000\u2013$4,000 |"
+    },
+    {
       "service": "Faucet and Fixture Replacement",
       "source": "angi",
       "source_url": "https://www.angi.com/articles/plumber-cost.htm",
@@ -309,6 +519,24 @@
       "raw_text": "| Fiberglass | $6\u2013$10 | $155\u2013$260 |"
     },
     {
+      "service": "Fireclay",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/sink-installation-cost.htm",
+      "price_low": 600.0,
+      "price_high": 1400.0,
+      "price_avg": 1000.0,
+      "raw_text": "| Fireclay | $600\u2013$1,400 |"
+    },
+    {
+      "service": "Fixture",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/what-cost-replace-water-shut-valve-supplies-water-refrigerator.htm",
+      "price_low": 50.0,
+      "price_high": 150.0,
+      "price_avg": 100.0,
+      "raw_text": "| Fixture | $50\u2013$150 |"
+    },
+    {
       "service": "Flat rates",
       "source": "angi",
       "source_url": "https://www.angi.com/articles/plumber-cost.htm",
@@ -316,6 +544,15 @@
       "price_high": 400.0,
       "price_avg": 250.0,
       "raw_text": "| Flat rates | $100\u2013$400 |"
+    },
+    {
+      "service": "Furnace",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/how-much-does-installing-or-replacing-plumbing-pipes-cost.htm",
+      "price_low": 700.0,
+      "price_high": 1700.0,
+      "price_avg": 1200.0,
+      "raw_text": "| Furnace | $700\u2013$1,700 |"
     },
     {
       "service": "Galvanized",
@@ -345,6 +582,15 @@
       "raw_text": "| Gas | $700\u2013$2.700 | Areas with high electricity costs |"
     },
     {
+      "service": "Gas line installation",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/how-much-does-installing-or-replacing-plumbing-pipes-cost.htm",
+      "price_low": 300.0,
+      "price_high": 900.0,
+      "price_avg": 600.0,
+      "raw_text": "| Gas line installation | $300\u2013$900 |"
+    },
+    {
       "service": "Gas Line Repair",
       "source": "angi",
       "source_url": "https://www.angi.com/articles/plumber-cost.htm",
@@ -352,6 +598,51 @@
       "price_high": 750.0,
       "price_avg": 500.0,
       "raw_text": "| Gas Line Repair | $250\u2013$750 |"
+    },
+    {
+      "service": "Gaskets and seals",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/plumber-cost-to-fix-leaky-faucet.htm",
+      "price_low": 2.0,
+      "price_high": 10.0,
+      "price_avg": 6.0,
+      "raw_text": "| Gaskets and seals | $2 \u2013 $10 |"
+    },
+    {
+      "service": "Gate",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/what-cost-replace-water-shut-valve-supplies-water-refrigerator.htm",
+      "price_low": 10.0,
+      "price_high": 50.0,
+      "price_avg": 30.0,
+      "raw_text": "| Gate | $10\u2013$50 |"
+    },
+    {
+      "service": "Glass",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/sink-installation-cost.htm",
+      "price_low": 400.0,
+      "price_high": 2000.0,
+      "price_avg": 1200.0,
+      "raw_text": "| Glass | $400\u2013$2,000 |"
+    },
+    {
+      "service": "Globe",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/what-cost-replace-water-shut-valve-supplies-water-refrigerator.htm",
+      "price_low": 10.0,
+      "price_high": 25.0,
+      "price_avg": 17.5,
+      "raw_text": "| Globe | $10\u2013$25 |"
+    },
+    {
+      "service": "Granite",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/sink-installation-cost.htm",
+      "price_low": 600.0,
+      "price_high": 2500.0,
+      "price_avg": 1550.0,
+      "raw_text": "| Granite | $600\u2013$2,500 |"
     },
     {
       "service": "Gravity Flush",
@@ -390,6 +681,24 @@
       "raw_text": "| High Level | $700 |"
     },
     {
+      "service": "Holiday",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/emergency-plumber-cost.htm",
+      "price_low": 120.0,
+      "price_high": 600.0,
+      "price_avg": 360.0,
+      "raw_text": "| Holiday | $120\u2013$600 |"
+    },
+    {
+      "service": "Hose",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/plumber-cost-to-fix-leaky-faucet.htm",
+      "price_low": 15.0,
+      "price_high": 50.0,
+      "price_avg": 32.5,
+      "raw_text": "| Hose | $15 \u2013 $50 |"
+    },
+    {
       "service": "Hourly rates",
       "source": "angi",
       "source_url": "https://www.angi.com/articles/plumber-cost.htm",
@@ -408,6 +717,15 @@
       "raw_text": "| Hybrid Heat Pump | $1,200\u2013$3,500 | Energy efficiency in garages or basements |"
     },
     {
+      "service": "In-ground at water meter",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/what-cost-replace-water-shut-valve-supplies-water-refrigerator.htm",
+      "price_low": 180.0,
+      "price_high": 500.0,
+      "price_avg": 340.0,
+      "raw_text": "| In-ground at water meter | $180\u2013$500 |"
+    },
+    {
       "service": "In-Wall Tank/Wall Mounted",
       "source": "angi",
       "source_url": "https://www.angi.com/articles/how-much-does-toilet-installation-cost.htm",
@@ -417,6 +735,15 @@
       "raw_text": "| In-Wall Tank/Wall Mounted | $700 |"
     },
     {
+      "service": "Indianapolis, Indiana",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/emergency-plumber-cost.htm",
+      "price_low": 250.0,
+      "price_high": 1275.0,
+      "price_avg": 762.5,
+      "raw_text": "| Indianapolis, Indiana | $250\u2013$1,275 |"
+    },
+    {
       "service": "Indirect",
       "source": "angi",
       "source_url": "https://www.angi.com/articles/how-much-does-water-heater-installation-cost.htm",
@@ -424,6 +751,15 @@
       "price_high": 3500.0,
       "price_avg": 2350.0,
       "raw_text": "| Indirect | $1,200\u2013$3,500 | Flexible fuel source |"
+    },
+    {
+      "service": "Installing a new sewer line",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/how-much-does-installing-or-replacing-plumbing-pipes-cost.htm",
+      "price_low": 500.0,
+      "price_high": 2500.0,
+      "price_avg": 1500.0,
+      "raw_text": "| Installing a new sewer line | $500\u2013$2,500 |"
     },
     {
       "service": "Installing a shower",
@@ -442,6 +778,15 @@
       "price_high": 500.0,
       "price_avg": 500.0,
       "raw_text": "| Installing a sink | $500 |"
+    },
+    {
+      "service": "Installing new piping",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/how-much-does-installing-or-replacing-plumbing-pipes-cost.htm",
+      "price_low": 2.5,
+      "price_high": 15.0,
+      "price_avg": 8.75,
+      "raw_text": "| Installing new piping | $2.50\u2013$15 per linear foot |"
     },
     {
       "service": "Journeyperson",
@@ -471,6 +816,24 @@
       "raw_text": "| Kitchen | $150\u2013$500 |"
     },
     {
+      "service": "Kitchen sink",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/plumber-cost-to-fix-leaky-faucet.htm",
+      "price_low": 100.0,
+      "price_high": 250.0,
+      "price_avg": 175.0,
+      "raw_text": "| Kitchen sink | $100 \u2013 $250 |"
+    },
+    {
+      "service": "Las Vegas, Nevada",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/emergency-plumber-cost.htm",
+      "price_low": 265.0,
+      "price_high": 1500.0,
+      "price_avg": 882.5,
+      "raw_text": "| Las Vegas, Nevada | $265\u2013$1,500 |"
+    },
+    {
       "service": "Leaking Pipes",
       "source": "angi",
       "source_url": "https://www.angi.com/articles/plumber-cost.htm",
@@ -478,6 +841,24 @@
       "price_high": 550.0,
       "price_avg": 362.5,
       "raw_text": "| Leaking Pipes | $175\u2013$550 |"
+    },
+    {
+      "service": "Long Island, NY",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/how-much-does-installing-or-replacing-plumbing-pipes-cost.htm",
+      "price_low": 960.0,
+      "price_high": 960.0,
+      "price_avg": 960.0,
+      "raw_text": "| Long Island, NY | $960 |"
+    },
+    {
+      "service": "Los Angeles, California",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/emergency-plumber-cost.htm",
+      "price_low": 300.0,
+      "price_high": 1800.0,
+      "price_avg": 1050.0,
+      "raw_text": "| Los Angeles, California | $300\u2013$1,800 |"
     },
     {
       "service": "Main line",
@@ -507,6 +888,60 @@
       "raw_text": "| Master | $80\u2013$200 per hour |"
     },
     {
+      "service": "Minneapolis",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/how-much-does-installing-or-replacing-plumbing-pipes-cost.htm",
+      "price_low": 1130.0,
+      "price_high": 1130.0,
+      "price_avg": 1130.0,
+      "raw_text": "| Minneapolis | $1,130 |"
+    },
+    {
+      "service": "Minneapolis, Minnesota",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/emergency-plumber-cost.htm",
+      "price_low": 265.0,
+      "price_high": 1500.0,
+      "price_avg": 882.5,
+      "raw_text": "| Minneapolis, Minnesota | $265\u2013$1,500 |"
+    },
+    {
+      "service": "Needle",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/what-cost-replace-water-shut-valve-supplies-water-refrigerator.htm",
+      "price_low": 5.0,
+      "price_high": 20.0,
+      "price_avg": 12.5,
+      "raw_text": "| Needle | $5\u2013$20 |"
+    },
+    {
+      "service": "New Orleans, Louisiana",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/emergency-plumber-cost.htm",
+      "price_low": 265.0,
+      "price_high": 1425.0,
+      "price_avg": 845.0,
+      "raw_text": "| New Orleans, Louisiana | $265\u2013$1,425 |"
+    },
+    {
+      "service": "New York, New York",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/emergency-plumber-cost.htm",
+      "price_low": 300.0,
+      "price_high": 1575.0,
+      "price_avg": 937.5,
+      "raw_text": "| New York, New York | $300\u2013$1,575 |"
+    },
+    {
+      "service": "O-ring",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/plumber-cost-to-fix-leaky-faucet.htm",
+      "price_low": 1.0,
+      "price_high": 5.0,
+      "price_avg": 3.0,
+      "raw_text": "| O-ring | $1 \u2013 $5 |"
+    },
+    {
       "service": "One-Piece",
       "source": "angi",
       "source_url": "https://www.angi.com/articles/how-much-does-toilet-installation-cost.htm",
@@ -514,6 +949,33 @@
       "price_high": 800.0,
       "price_avg": 800.0,
       "raw_text": "| One-Piece | $800 |"
+    },
+    {
+      "service": "Orlando, Florida",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/emergency-plumber-cost.htm",
+      "price_low": 225.0,
+      "price_high": 1125.0,
+      "price_avg": 675.0,
+      "raw_text": "| Orlando, Florida | $225\u2013$1,125 |"
+    },
+    {
+      "service": "Outdoor",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/plumber-cost-to-fix-leaky-faucet.htm",
+      "price_low": 100.0,
+      "price_high": 300.0,
+      "price_avg": 200.0,
+      "raw_text": "| Outdoor | $100 \u2013 $300 |"
+    },
+    {
+      "service": "Pedestal",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/sink-installation-cost.htm",
+      "price_low": 300.0,
+      "price_high": 1100.0,
+      "price_avg": 700.0,
+      "raw_text": "| Pedestal | $300\u2013$1,100 |"
     },
     {
       "service": "Permit fees",
@@ -534,6 +996,15 @@
       "raw_text": "| PEX Pipes | $1.50\u2013$4 per linear foot |"
     },
     {
+      "service": "Phoenix, Arizona",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/emergency-plumber-cost.htm",
+      "price_low": 300.0,
+      "price_high": 1400.0,
+      "price_avg": 850.0,
+      "raw_text": "| Phoenix, Arizona | $300\u2013$1,400 |"
+    },
+    {
       "service": "Pipe Replacement",
       "source": "angi",
       "source_url": "https://www.angi.com/articles/how-much-does-toilet-installation-cost.htm",
@@ -550,6 +1021,15 @@
       "price_high": 15.0,
       "price_avg": 8.0,
       "raw_text": "| Polypropylene | $1\u2013$15 | $150\u2013$275 |"
+    },
+    {
+      "service": "Porcelain",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/sink-installation-cost.htm",
+      "price_low": 90.0,
+      "price_high": 1500.0,
+      "price_avg": 795.0,
+      "raw_text": "| Porcelain | $90\u2013$1,500 |"
     },
     {
       "service": "Power",
@@ -588,6 +1068,15 @@
       "raw_text": "| PVC | $0.50\u2013$8 | $150\u2013$260 |"
     },
     {
+      "service": "Quartz",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/sink-installation-cost.htm",
+      "price_low": 800.0,
+      "price_high": 1200.0,
+      "price_avg": 1000.0,
+      "raw_text": "| Quartz | $800\u2013$1,200 |"
+    },
+    {
       "service": "Radiator Repair",
       "source": "angi",
       "source_url": "https://www.angi.com/articles/plumber-cost.htm",
@@ -595,6 +1084,15 @@
       "price_high": 700.0,
       "price_avg": 425.0,
       "raw_text": "| Radiator Repair | $150\u2013$700 |"
+    },
+    {
+      "service": "Removing existing piping",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/how-much-does-installing-or-replacing-plumbing-pipes-cost.htm",
+      "price_low": 1000.0,
+      "price_high": 5000.0,
+      "price_avg": 3000.0,
+      "raw_text": "| Removing existing piping | $1,000\u2013$5,000 |"
     },
     {
       "service": "Repairing Burst Pipes",
@@ -633,6 +1131,33 @@
       "raw_text": "| Replacing a tankless water heater | $600\u2013$1,900 |"
     },
     {
+      "service": "Replacing galvanized pipes",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/how-much-does-installing-or-replacing-plumbing-pipes-cost.htm",
+      "price_low": 1500.0,
+      "price_high": 15000.0,
+      "price_avg": 8250.0,
+      "raw_text": "| Replacing galvanized pipes | $1,500\u2013$15,000 |"
+    },
+    {
+      "service": "Replacing lead pipes",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/how-much-does-installing-or-replacing-plumbing-pipes-cost.htm",
+      "price_low": 1500.0,
+      "price_high": 15000.0,
+      "price_avg": 8250.0,
+      "raw_text": "| Replacing lead pipes | $1,500\u2013$15,000 |"
+    },
+    {
+      "service": "Replacing water main",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/how-much-does-installing-or-replacing-plumbing-pipes-cost.htm",
+      "price_low": 800.0,
+      "price_high": 2000.0,
+      "price_avg": 1400.0,
+      "raw_text": "| Replacing water main | $800\u2013$2,000 |"
+    },
+    {
       "service": "Rerouting Plumbing",
       "source": "angi",
       "source_url": "https://www.angi.com/articles/plumber-cost.htm",
@@ -649,6 +1174,42 @@
       "price_high": 2300.0,
       "price_avg": 1450.0,
       "raw_text": "| Rheem\u00ae | $600\u2013$2,300 |"
+    },
+    {
+      "service": "Rubber washer",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/plumber-cost-to-fix-leaky-faucet.htm",
+      "price_low": 2.0,
+      "price_high": 5.0,
+      "price_avg": 3.5,
+      "raw_text": "| Rubber washer | $2 \u2013 $5 |"
+    },
+    {
+      "service": "San Francisco, California",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/emergency-plumber-cost.htm",
+      "price_low": 300.0,
+      "price_high": 1800.0,
+      "price_avg": 1050.0,
+      "raw_text": "| San Francisco, California | $300\u2013$1,800 |"
+    },
+    {
+      "service": "Seattle",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/how-much-does-installing-or-replacing-plumbing-pipes-cost.htm",
+      "price_low": 2090.0,
+      "price_high": 2090.0,
+      "price_avg": 2090.0,
+      "raw_text": "| Seattle | $2,090 |"
+    },
+    {
+      "service": "Seattle, Washington",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/emergency-plumber-cost.htm",
+      "price_low": 415.0,
+      "price_high": 2250.0,
+      "price_avg": 1332.5,
+      "raw_text": "| Seattle, Washington | $415\u2013$2,250 |"
     },
     {
       "service": "Septic Tank Repair",
@@ -687,6 +1248,15 @@
       "raw_text": "| Shower | $3,000\u2013$12,000 |"
     },
     {
+      "service": "Shower faucet",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/plumber-cost-to-fix-leaky-faucet.htm",
+      "price_low": 75.0,
+      "price_high": 200.0,
+      "price_avg": 137.5,
+      "raw_text": "| Shower faucet | $75 \u2013 $200 |"
+    },
+    {
       "service": "Shower head replacement",
       "source": "angi",
       "source_url": "https://www.angi.com/articles/how-much-does-toilet-installation-cost.htm",
@@ -703,6 +1273,15 @@
       "price_high": 2500.0,
       "price_avg": 1500.0,
       "raw_text": "| Single-Room Plumbing | $500\u2013$2,500 |"
+    },
+    {
+      "service": "Sink",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/how-much-does-installing-or-replacing-plumbing-pipes-cost.htm",
+      "price_low": 350.0,
+      "price_high": 500.0,
+      "price_avg": 425.0,
+      "raw_text": "| Sink | $350\u2013$500 |"
     },
     {
       "service": "Sink Installation",
@@ -739,6 +1318,33 @@
       "price_high": 350.0,
       "price_avg": 250.0,
       "raw_text": "| Sprinkler | $150\u2013$350 |"
+    },
+    {
+      "service": "St. Louis, Missouri",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/emergency-plumber-cost.htm",
+      "price_low": 275.0,
+      "price_high": 1245.0,
+      "price_avg": 760.0,
+      "raw_text": "| St. Louis, Missouri | $275\u2013$1,245 |"
+    },
+    {
+      "service": "Stainless Steel",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/sink-installation-cost.htm",
+      "price_low": 200.0,
+      "price_high": 1500.0,
+      "price_avg": 850.0,
+      "raw_text": "| Stainless Steel | $200\u2013$1,500 |"
+    },
+    {
+      "service": "Stem",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/plumber-cost-to-fix-leaky-faucet.htm",
+      "price_low": 10.0,
+      "price_high": 50.0,
+      "price_avg": 30.0,
+      "raw_text": "| Stem | $10 \u2013 $50 |"
     },
     {
       "service": "Sump Pump Repair",
@@ -804,6 +1410,15 @@
       "raw_text": "| Two-Piece (most common) | $375 |"
     },
     {
+      "service": "Undermount",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/sink-installation-cost.htm",
+      "price_low": 250.0,
+      "price_high": 1500.0,
+      "price_avg": 875.0,
+      "raw_text": "| Undermount | $250\u2013$1,500 |"
+    },
+    {
       "service": "Upflush/Macerator",
       "source": "angi",
       "source_url": "https://www.angi.com/articles/how-much-does-toilet-installation-cost.htm",
@@ -831,6 +1446,15 @@
       "raw_text": "| Upgrading to a tankless water heater | $2,500 |"
     },
     {
+      "service": "Utility",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/sink-installation-cost.htm",
+      "price_low": 200.0,
+      "price_high": 500.0,
+      "price_avg": 350.0,
+      "raw_text": "| Utility | $200\u2013$500 |"
+    },
+    {
       "service": "Valve Replacements",
       "source": "angi",
       "source_url": "https://www.angi.com/articles/how-much-does-toilet-installation-cost.htm",
@@ -840,6 +1464,33 @@
       "raw_text": "| Valve Replacements | $50\u2013$150 |"
     },
     {
+      "service": "Valve seat",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/plumber-cost-to-fix-leaky-faucet.htm",
+      "price_low": 5.0,
+      "price_high": 10.0,
+      "price_avg": 7.5,
+      "raw_text": "| Valve seat | $5 \u2013 $10 |"
+    },
+    {
+      "service": "Vault or box",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/what-cost-replace-water-shut-valve-supplies-water-refrigerator.htm",
+      "price_low": 200.0,
+      "price_high": 750.0,
+      "price_avg": 475.0,
+      "raw_text": "| Vault or box | $200\u2013$750 |"
+    },
+    {
+      "service": "Vessel",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/sink-installation-cost.htm",
+      "price_low": 250.0,
+      "price_high": 2000.0,
+      "price_avg": 1125.0,
+      "raw_text": "| Vessel | $250\u2013$2,000 |"
+    },
+    {
       "service": "Wall",
       "source": "angi",
       "source_url": "https://angi.com/articles/burst-pipe-repair-cost.htm",
@@ -847,6 +1498,42 @@
       "price_high": 500.0,
       "price_avg": 325.0,
       "raw_text": "| Wall | $150\u2013$500 |"
+    },
+    {
+      "service": "Wall mount",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/sink-installation-cost.htm",
+      "price_low": 250.0,
+      "price_high": 1050.0,
+      "price_avg": 650.0,
+      "raw_text": "| Wall mount | $250\u2013$1,050 |"
+    },
+    {
+      "service": "Washing Machine",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/how-much-does-installing-or-replacing-plumbing-pipes-cost.htm",
+      "price_low": 300.0,
+      "price_high": 1500.0,
+      "price_avg": 900.0,
+      "raw_text": "| Washing Machine | $300\u2013$1,500 |"
+    },
+    {
+      "service": "Washington, D.C.",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/emergency-plumber-cost.htm",
+      "price_low": 300.0,
+      "price_high": 1575.0,
+      "price_avg": 937.5,
+      "raw_text": "| Washington, D.C. | $300\u2013$1,575 |"
+    },
+    {
+      "service": "Water Heater",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/how-much-does-installing-or-replacing-plumbing-pipes-cost.htm",
+      "price_low": 400.0,
+      "price_high": 1800.0,
+      "price_avg": 1100.0,
+      "raw_text": "| Water Heater | $400\u2013$1,800 |"
     },
     {
       "service": "Water Heater Installation",
@@ -885,6 +1572,15 @@
       "raw_text": "| Wax Ring Replacement | $50\u2013$200 |"
     },
     {
+      "service": "Weekend",
+      "source": "angi",
+      "source_url": "https://www.angi.com/articles/emergency-plumber-cost.htm",
+      "price_low": 80.0,
+      "price_high": 400.0,
+      "price_avg": 240.0,
+      "raw_text": "| Weekend | $80\u2013$400 |"
+    },
+    {
       "service": "Whirlpool\u00ae",
       "source": "angi",
       "source_url": "https://www.angi.com/articles/how-much-does-water-heater-installation-cost.htm",
@@ -892,6 +1588,24 @@
       "price_high": 1500.0,
       "price_avg": 925.0,
       "raw_text": "| Whirlpool\u00ae | $350\u2013$1,500 |"
+    },
+    {
+      "service": "Whole bathroom",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/how-much-does-installing-or-replacing-plumbing-pipes-cost.htm",
+      "price_low": 1600.0,
+      "price_high": 11600.0,
+      "price_avg": 6600.0,
+      "raw_text": "| Whole bathroom | $1,600\u2013$11,600 |"
+    },
+    {
+      "service": "Whole home",
+      "source": "angi",
+      "source_url": "https://angi.com/articles/how-much-does-installing-or-replacing-plumbing-pipes-cost.htm",
+      "price_low": 8000.0,
+      "price_high": 13500.0,
+      "price_avg": 10750.0,
+      "raw_text": "| Whole home | $8,000\u2013$13,500 |"
     },
     {
       "service": "Whole-House Plumbing",

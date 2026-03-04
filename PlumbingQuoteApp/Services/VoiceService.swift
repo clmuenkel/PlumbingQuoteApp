@@ -21,6 +21,12 @@ class VoiceService: NSObject, ObservableObject, AVAudioPlayerDelegate {
     private var countdownTimer: Timer?
     private var audioFile: AVAudioFile?
     private var audioPlayer: AVAudioPlayer?
+    private var hasInstalledTap: Bool = false
+    private var forceFinalizeWorkItem: DispatchWorkItem?
+    private var stopCleanupWorkItem: DispatchWorkItem?
+    private var isStoppingRecording: Bool = false
+    private var lastAudioLevelUpdate: CFAbsoluteTime = 0
+    private let audioLevelUpdateInterval: CFAbsoluteTime = 0.1
     
     override init() {
         super.init()
@@ -43,14 +49,27 @@ class VoiceService: NSObject, ObservableObject, AVAudioPlayerDelegate {
     }
     
     func startRecording() {
+        guard isAuthorized else {
+            error = "Speech recognition not authorized. Please enable in Settings."
+            HapticsService.error()
+            return
+        }
+
         stopPlayback()
 
         // Reset
+        forceFinalizeWorkItem?.cancel()
+        forceFinalizeWorkItem = nil
+        stopCleanupWorkItem?.cancel()
+        stopCleanupWorkItem = nil
+        isStoppingRecording = false
         recognitionTask?.cancel()
         recognitionTask = nil
+        recognitionRequest = nil
         initialTranscript = transcript.trimmingCharacters(in: .whitespacesAndNewlines)
         error = nil
         audioLevel = 0
+        lastAudioLevelUpdate = 0
         resetCountdown()
         
         let audioSession = AVAudioSession.sharedInstance()
@@ -88,15 +107,23 @@ class VoiceService: NSObject, ObservableObject, AVAudioPlayerDelegate {
                         self.transcript = "\(self.initialTranscript)\n\(latest)"
                     }
                 }
+                if result.isFinal {
+                    self.forceFinalizeWorkItem?.cancel()
+                    self.forceFinalizeWorkItem = nil
+                    self.recognitionTask = nil
+                }
             }
             
             if let error = error {
                 DispatchQueue.main.async {
                     // Don't show error if we just stopped recording
-                    if self.isRecording {
+                    if self.isRecording && !self.isStoppingRecording {
                         self.error = error.localizedDescription
                         HapticsService.error()
                     }
+                    self.forceFinalizeWorkItem?.cancel()
+                    self.forceFinalizeWorkItem = nil
+                    self.recognitionTask = nil
                     self.stopRecording()
                 }
             }
@@ -123,10 +150,14 @@ class VoiceService: NSObject, ObservableObject, AVAudioPlayerDelegate {
             self.recognitionRequest?.append(buffer)
             try? self.audioFile?.write(from: buffer)
             let level = self.normalizedRMS(from: buffer)
+            let now = CFAbsoluteTimeGetCurrent()
+            guard now - self.lastAudioLevelUpdate >= self.audioLevelUpdateInterval else { return }
+            self.lastAudioLevelUpdate = now
             DispatchQueue.main.async {
                 self.audioLevel = level
             }
         }
+        hasInstalledTap = true
         
         do {
             audioEngine.prepare()
@@ -137,32 +168,55 @@ class VoiceService: NSObject, ObservableObject, AVAudioPlayerDelegate {
                 self.startCountdownTimer()
             }
         } catch {
+            cleanupRecordingPipeline(forceCancelRecognition: true)
             self.error = "Audio engine error: \(error.localizedDescription)"
             HapticsService.error()
         }
     }
     
     func stopRecording() {
+        stopCleanupWorkItem?.cancel()
+        stopCleanupWorkItem = nil
+        isStoppingRecording = true
+        forceFinalizeWorkItem?.cancel()
+        forceFinalizeWorkItem = nil
         countdownTimer?.invalidate()
         countdownTimer = nil
         audioEngine.stop()
-        audioEngine.inputNode.removeTap(onBus: 0)
+        if hasInstalledTap {
+            audioEngine.inputNode.removeTap(onBus: 0)
+            hasInstalledTap = false
+        }
         recognitionRequest?.endAudio()
+        let taskAtStop = recognitionTask
+        if let taskAtStop {
+            let work = DispatchWorkItem { [weak self] in
+                guard let self else { return }
+                if self.recognitionTask === taskAtStop {
+                    taskAtStop.cancel()
+                    self.recognitionTask = nil
+                }
+            }
+            forceFinalizeWorkItem = work
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: work)
+        }
         recognitionRequest = nil
-        recognitionTask?.cancel()
-        recognitionTask = nil
         audioFile = nil
         try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
         
-        DispatchQueue.main.async {
+        let cleanup = DispatchWorkItem { [weak self] in
+            guard let self else { return }
             self.isRecording = false
             self.audioLevel = 0
             if FileManager.default.fileExists(atPath: self.tempRecordingURL.path) {
                 self.recordingURL = self.tempRecordingURL
             }
             self.resetCountdown()
+            self.isStoppingRecording = false
             HapticsService.recordStopped()
         }
+        stopCleanupWorkItem = cleanup
+        DispatchQueue.main.async(execute: cleanup)
     }
     
     func toggleRecording() {
@@ -204,7 +258,14 @@ class VoiceService: NSObject, ObservableObject, AVAudioPlayerDelegate {
     }
 
     func clearTranscript() {
+        stopCleanupWorkItem?.cancel()
+        stopCleanupWorkItem = nil
+        if isRecording {
+            stopRecording()
+        }
         stopPlayback()
+        forceFinalizeWorkItem?.cancel()
+        forceFinalizeWorkItem = nil
         transcript = ""
         recordingURL = nil
         audioLevel = 0
@@ -236,7 +297,16 @@ class VoiceService: NSObject, ObservableObject, AVAudioPlayerDelegate {
     }
 
     private var tempRecordingURL: URL {
-        FileManager.default.temporaryDirectory.appendingPathComponent("voice_recording.caf")
+        FileManager.default.temporaryDirectory.appendingPathComponent("voice_recording.wav")
+    }
+
+    func audioPayload() -> (base64: String, mimeType: String)? {
+        guard let recordingURL,
+              let data = try? Data(contentsOf: recordingURL),
+              !data.isEmpty else {
+            return nil
+        }
+        return (base64: data.base64EncodedString(), mimeType: "audio/wav")
     }
 
     private func normalizedRMS(from buffer: AVAudioPCMBuffer) -> Float {
@@ -259,6 +329,21 @@ class VoiceService: NSObject, ObservableObject, AVAudioPlayerDelegate {
         try audioSession.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .duckOthers])
         try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
         try audioSession.overrideOutputAudioPort(.speaker)
+    }
+
+    private func cleanupRecordingPipeline(forceCancelRecognition: Bool) {
+        audioEngine.stop()
+        if hasInstalledTap {
+            audioEngine.inputNode.removeTap(onBus: 0)
+            hasInstalledTap = false
+        }
+        if forceCancelRecognition {
+            recognitionTask?.cancel()
+            recognitionTask = nil
+        }
+        recognitionRequest = nil
+        audioFile = nil
+        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
     }
 
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {

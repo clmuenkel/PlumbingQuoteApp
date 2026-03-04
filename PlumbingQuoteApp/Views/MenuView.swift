@@ -13,24 +13,29 @@ struct MenuView: View {
                             .font(.headline)
                         Text(authVM.currentTechnician?.email ?? "")
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(AppTheme.muted)
                     }
                     .padding(.vertical, 4)
                 }
+                .listRowBackground(AppTheme.surface)
 
                 Section {
                     NavigationLink(destination: QuoteHistoryView()) {
                         Label("Quote History", systemImage: "clock.arrow.circlepath")
+                            .foregroundStyle(AppTheme.text)
                     }
 
                     NavigationLink(destination: AnalyticsDashboardView()) {
                         Label("Analytics", systemImage: "chart.bar")
+                            .foregroundStyle(AppTheme.text)
                     }
 
                     NavigationLink(destination: SettingsView()) {
                         Label("Settings", systemImage: "gearshape")
+                            .foregroundStyle(AppTheme.text)
                     }
                 }
+                .listRowBackground(AppTheme.surface)
 
                 Section {
                     Button(role: .destructive) {
@@ -42,8 +47,14 @@ struct MenuView: View {
                         Label("Sign Out", systemImage: "rectangle.portrait.and.arrow.right")
                     }
                 }
+                .listRowBackground(AppTheme.surface)
             }
+            .scrollContentBackground(.hidden)
+            .background(AppTheme.bg)
+            .tint(AppTheme.muted)
             .navigationTitle("Menu")
+            .toolbarBackground(AppTheme.bg, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }

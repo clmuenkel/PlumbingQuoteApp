@@ -15,14 +15,15 @@ struct SignaturePadView: View {
             VStack(spacing: 16) {
                 Text("Customer Signature")
                     .font(.headline)
+                    .foregroundStyle(AppTheme.text)
 
                 GeometryReader { geo in
                     ZStack {
                         RoundedRectangle(cornerRadius: 12)
-                            .fill(Color.white)
+                            .fill(AppTheme.surface)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 12)
-                                    .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                                    .stroke(AppTheme.accentLight.opacity(0.8), lineWidth: 1)
                             )
 
                         Canvas { context, size in
@@ -61,7 +62,7 @@ struct SignaturePadView: View {
                         strokes.removeAll()
                         currentStroke.removeAll()
                     }
-                    .foregroundStyle(.red)
+                    .foregroundStyle(AppTheme.error)
 
                     Spacer()
 
@@ -74,7 +75,9 @@ struct SignaturePadView: View {
                 }
             }
             .padding()
-            .background(Color(.systemGroupedBackground))
+            .background(AppTheme.bgAlt)
+            .toolbarBackground(AppTheme.bgAlt, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") { onCancel() }

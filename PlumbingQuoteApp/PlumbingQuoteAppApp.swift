@@ -15,6 +15,8 @@ struct PlumbingQuoteAppApp: App {
                     LoginView()
                 }
             }
+            .tint(AppTheme.accent)
+            .preferredColorScheme(.light)
             .environmentObject(authVM)
         }
     }

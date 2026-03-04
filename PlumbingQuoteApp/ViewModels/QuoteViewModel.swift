@@ -12,7 +12,11 @@ struct DeveloperAlertInfo: Identifiable {
 // MARK: - Main ViewModel
 @MainActor
 class QuoteViewModel: ObservableObject {
+    #if DEBUG
     static let developerMode = true
+    #else
+    static let developerMode = false
+    #endif
     static let minTextSignalLength = 12
 
     // Input state
@@ -58,7 +62,7 @@ class QuoteViewModel: ObservableObject {
 
     func clearInputs() {
         capturedImages.removeAll()
-        voiceService.transcript = ""
+        voiceService.clearTranscript()
         additionalNotes = ""
         customerName = ""
         customerPhone = ""
@@ -145,8 +149,12 @@ class QuoteViewModel: ObservableObject {
         }
         generationStep = "Analyzing issue..."
 
+        let audioPayload = voiceService.audioPayload()
+
         let result = await aiService.analyzeAndQuote(
             images: capturedImages,
+            audioBase64: audioPayload?.base64,
+            audioMimeType: audioPayload?.mimeType,
             voiceTranscript: voiceService.transcript.isEmpty ? nil : voiceService.transcript,
             additionalNotes: additionalNotes.isEmpty ? nil : additionalNotes,
             customerName: customerName.isEmpty ? nil : customerName,

@@ -10,9 +10,9 @@ enum QuoteTier: String, CaseIterable, Identifiable {
 
     var color: Color {
         switch self {
-        case .good: return .green
-        case .better: return .blue
-        case .best: return .purple
+        case .good: return AppTheme.success
+        case .better: return AppTheme.accent
+        case .best: return AppTheme.accentDark
         }
     }
 }
@@ -34,10 +34,10 @@ enum EstimateStatus: String, Codable, CaseIterable {
 
     var color: Color {
         switch self {
-        case .draft: return .gray
-        case .sent: return .orange
-        case .accepted: return .green
-        case .rejected: return .red
+        case .draft: return AppTheme.muted
+        case .sent: return AppTheme.warning
+        case .accepted: return AppTheme.success
+        case .rejected: return AppTheme.error
         }
     }
 }
@@ -69,6 +69,11 @@ struct QuoteLineItem: Identifiable, Codable {
         case quantity
         case category
     }
+
+    var isLabor: Bool {
+        category.caseInsensitiveCompare("labor") == .orderedSame
+            || partName.trimmingCharacters(in: .whitespacesAndNewlines).caseInsensitiveCompare("labor") == .orderedSame
+    }
 }
 
 struct EditableLineItem: Identifiable {
@@ -84,6 +89,11 @@ struct EditableLineItem: Identifiable {
     }
 }
 
+struct MarketRange: Codable {
+    let low: Double
+    let high: Double
+}
+
 struct Quote: Identifiable, Codable {
     var id: String = UUID().uuidString
     var optionId: String? = nil
@@ -91,10 +101,17 @@ struct Quote: Identifiable, Codable {
     let lineItems: [QuoteLineItem]
     let laborHours: Double
     let laborRate: Double
-    let laborTotal: Double? = nil
-    let partsTotal: Double? = nil
-    let tax: Double? = nil
-    let total: Double? = nil
+    var laborTotal: Double? = nil
+    var partsTotal: Double? = nil
+    var tax: Double? = nil
+    var total: Double? = nil
+    var priceBookPrice: Double? = nil
+    var marketAverage: Double? = nil
+    var marketRange: MarketRange? = nil
+    var confidenceScore: Double? = nil
+    var reasoning: String? = nil
+    var validationFlags: [String]? = nil
+    var marketPositionPercent: Double? = nil
     let warrantyMonths: Int
     let solutionDescription: String
     let notes: String
@@ -109,21 +126,44 @@ struct Quote: Identifiable, Codable {
         case partsTotal
         case tax
         case total
+        case priceBookPrice
+        case marketAverage
+        case marketRange
+        case confidenceScore
+        case reasoning
+        case validationFlags
+        case marketPositionPercent
         case warrantyMonths
         case solutionDescription
         case notes
     }
 
     var computedPartsTotal: Double {
-        partsTotal ?? lineItems.reduce(0) { $0 + ($1.unitPrice * $1.quantity) }
+        partsTotal ?? lineItems
+            .filter { !$0.isLabor }
+            .reduce(0) { $0 + ($1.unitPrice * $1.quantity) }
     }
 
     var computedLaborTotal: Double {
-        laborTotal ?? (laborHours * laborRate)
+        if let laborTotal {
+            return laborTotal
+        }
+
+        let hoursBasedLabor = laborHours * laborRate
+        if hoursBasedLabor > 0 {
+            return hoursBasedLabor
+        }
+
+        return lineItems
+            .filter(\.isLabor)
+            .reduce(0) { $0 + ($1.unitPrice * $1.quantity) }
     }
 
     var computedTax: Double {
-        tax ?? (computedPartsTotal * 0.08)
+        if let tax {
+            return tax
+        }
+        return computedPartsTotal * CompanySettingsService.defaultTaxRate
     }
 
     var computedTotal: Double {
@@ -136,9 +176,9 @@ struct QuoteResult: Identifiable {
     let remoteId: String?
     let estimateNumber: Int?
     let issue: PlumbingIssue
-    let good: Quote
-    let better: Quote
-    let best: Quote
+    var good: Quote
+    var better: Quote
+    var best: Quote
     let createdAt: Date
     let voiceTranscript: String?
     let customerName: String?
@@ -181,6 +221,17 @@ struct QuoteResult: Identifiable {
         case .good: return good
         case .better: return better
         case .best: return best
+        }
+    }
+
+    mutating func updateQuote(_ quote: Quote, for tier: QuoteTier) {
+        switch tier {
+        case .good:
+            good = quote
+        case .better:
+            better = quote
+        case .best:
+            best = quote
         }
     }
 }

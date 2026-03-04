@@ -49,7 +49,13 @@ using (bucket_id = 'quote-images');
 
 Set secrets in Supabase dashboard:
 
+- `ANTHROPIC_API_KEY`
 - `OPENAI_API_KEY`
+- `TAVILY_API_KEY`
+- `FIRECRAWL_API_KEY`
+- `LANGFUSE_SECRET_KEY`
+- `LANGFUSE_PUBLIC_KEY`
+- `LANGFUSE_HOST` (optional, defaults to `https://cloud.langfuse.com`)
 - `SUPABASE_SERVICE_ROLE_KEY`
 
 If you already have these in `.env.local`, use those exact values when setting Supabase Edge Function secrets.
@@ -62,7 +68,19 @@ Apply:
 2. `supabase/migrations/002_seed_industry.sql`
 3. `supabase/migrations/003_storage_quote_images.sql`
 4. `supabase/migrations/004_production_hardening.sql`
+5. `supabase/migrations/005_status_workflow.sql`
+6. `supabase/migrations/006_industry_rates_2026.sql`
+7. `supabase/migrations/007_auth_user_conflict_hardening.sql`
+8. `supabase/migrations/008_pgvector_competitor_schema.sql`
+9. `supabase/migrations/009_parts_catalog_competitor_vectors.sql`
+10. `supabase/migrations/010_brooks_plumbing_tuning.sql`
+11. `supabase/migrations/011_production_security_hardening.sql`
 
 ### 6) Deploy Edge Function
 
-Deploy `supabase/functions/analyze-issue`.
+Deploy:
+
+- `supabase/functions/analyze-issue`
+- `supabase/functions/update-estimate`
+- `supabase/functions/update-estimate-options`
+- `supabase/functions/refresh-competitor-pricing`

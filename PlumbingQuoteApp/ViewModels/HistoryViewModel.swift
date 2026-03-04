@@ -44,7 +44,12 @@ final class HistoryViewModel: ObservableObject {
                     return lhs.recommended && !rhs.recommended
                 }
                 let pickedOption = sortedOptions.first
-                let customerName = row.customer.map { "\($0.firstName) \($0.lastName)" }
+                let customerName = row.customer.flatMap { customer in
+                    let parts = [customer.firstName, customer.lastName]
+                        .compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }
+                        .filter { !$0.isEmpty }
+                    return parts.isEmpty ? nil : parts.joined(separator: " ")
+                }
 
                 historyItems.append(
                     QuoteHistoryItem(
@@ -150,6 +155,6 @@ private struct HistoryUserRow: Decodable {
 }
 
 private struct CustomerRow: Decodable {
-    let firstName: String
-    let lastName: String
+    let firstName: String?
+    let lastName: String?
 }

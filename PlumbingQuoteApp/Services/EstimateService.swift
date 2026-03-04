@@ -46,6 +46,23 @@ final class EstimateService {
         let options: [UpdateOptionPayload]
     }
 
+    struct UpdateOptionsResponse: Decodable {
+        struct UpdatedOption: Decodable {
+            let id: String
+            let tier: String
+            let subtotal: Double
+            let laborTotal: Double
+            let tax: Double
+            let total: Double
+            let laborHours: Double
+            let laborRate: Double
+        }
+
+        let ok: Bool
+        let estimateId: String
+        let options: [UpdatedOption]
+    }
+
     func updateStatus(
         estimateId: String,
         status: EstimateStatus,
@@ -101,7 +118,7 @@ final class EstimateService {
         }
     }
 
-    func updateOptions(estimateId: String, payload: UpdateOptionPayload) async throws {
+    func updateOptions(estimateId: String, payload: UpdateOptionPayload) async throws -> UpdateOptionsResponse {
         do {
             let session = try await supabase.auth.session
             guard let url = URL(string: "\(AppConfig.supabaseURL)/functions/v1/update-estimate-options") else {
@@ -128,6 +145,8 @@ final class EstimateService {
                     NSLocalizedDescriptionKey: body
                 ])
             }
+
+            return try JSONDecoder().decode(UpdateOptionsResponse.self, from: data)
         } catch {
             ErrorLogger.log(
                 message: "updateOptions failed: \(error.localizedDescription)",

@@ -55,7 +55,7 @@ struct SettingsView: View {
                     .focused($focusedField, equals: .taxRate)
                     .frame(minWidth: 90, idealWidth: 110, maxWidth: 140)
                     Text("%")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(AppTheme.muted)
                 }
             }
 
@@ -78,7 +78,7 @@ struct SettingsView: View {
             if let saveMessage {
                 Section {
                     Text(saveMessage)
-                        .foregroundStyle(.green)
+                        .foregroundStyle(AppTheme.success)
                         .font(.caption)
                 }
             }
@@ -86,12 +86,16 @@ struct SettingsView: View {
             if let error {
                 Section {
                     Text(error)
-                        .foregroundStyle(.red)
+                        .foregroundStyle(AppTheme.error)
                         .font(.caption)
                 }
             }
         }
         .navigationTitle("Settings")
+        .scrollContentBackground(.hidden)
+        .background(AppTheme.bg)
+        .toolbarBackground(AppTheme.bg, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
         .disabled(isLoading)
         .overlay {
             if isLoading {

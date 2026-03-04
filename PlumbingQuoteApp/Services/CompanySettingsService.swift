@@ -3,6 +3,7 @@ import Supabase
 
 final class CompanySettingsService {
     static let shared = CompanySettingsService()
+    static let defaultTaxRate: Double = 0.0825
     private let supabase = SupabaseService.shared.client
 
     private init() {}
@@ -68,7 +69,7 @@ final class CompanySettingsService {
                     companyPhone: "",
                     companyAddress: "",
                     laborRatePerHour: 95,
-                    taxRate: 0.08
+                    taxRate: Self.defaultTaxRate
                 )
             }
             return CompanySettingsData(
@@ -76,7 +77,7 @@ final class CompanySettingsService {
                 companyPhone: row.company_phone ?? "",
                 companyAddress: row.company_address ?? "",
                 laborRatePerHour: row.labor_rate_per_hour ?? 95,
-                taxRate: row.tax_rate ?? 0.08
+                taxRate: row.tax_rate ?? Self.defaultTaxRate
             )
         } catch {
             return CompanySettingsData(
@@ -84,7 +85,7 @@ final class CompanySettingsService {
                 companyPhone: "",
                 companyAddress: "",
                 laborRatePerHour: 95,
-                taxRate: 0.08
+                taxRate: Self.defaultTaxRate
             )
         }
     }

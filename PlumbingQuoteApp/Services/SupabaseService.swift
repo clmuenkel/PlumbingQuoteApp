@@ -5,11 +5,18 @@ final class SupabaseService {
     static let shared = SupabaseService()
 
     let client: SupabaseClient
+    let configurationError: String?
 
     private init() {
         guard let url = URL(string: AppConfig.supabaseURL) else {
-            fatalError("Invalid Supabase URL in AppConfig")
+            configurationError = "Configuration error: invalid Supabase URL. Please reinstall or contact support."
+            client = SupabaseClient(
+                supabaseURL: URL(string: "https://example.invalid")!,
+                supabaseKey: "invalid"
+            )
+            return
         }
+        configurationError = nil
         client = SupabaseClient(
             supabaseURL: url,
             supabaseKey: AppConfig.supabaseAnonKey

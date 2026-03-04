@@ -26,16 +26,16 @@ struct MultiImagePicker: View {
                             .font(.headline)
                         Text("Take a photo or choose from library")
                             .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(AppTheme.muted)
                     }
                     .frame(maxWidth: .infinity)
                     .frame(height: emptyStateHeight)
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(AppTheme.accent)
                     .clipShape(RoundedRectangle(cornerRadius: 14))
                     .overlay(
                         RoundedRectangle(cornerRadius: 14)
                             .strokeBorder(
-                                Color.blue.opacity(0.45),
+                                AppTheme.accentLight,
                                 style: StrokeStyle(lineWidth: 1.5, dash: [8])
                             )
                     )
@@ -76,12 +76,12 @@ struct MultiImagePicker: View {
                                         .font(.caption.weight(.medium))
                                 }
                                 .frame(width: addTileSize, height: addTileSize)
-                                .background(Color(.secondarySystemBackground))
-                                .foregroundStyle(.blue)
+                                .background(AppTheme.surface2)
+                                .foregroundStyle(AppTheme.accent)
                                 .clipShape(RoundedRectangle(cornerRadius: 12))
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 12)
-                                        .strokeBorder(Color.blue.opacity(0.2), lineWidth: 1)
+                                        .strokeBorder(AppTheme.accentLight.opacity(0.5), lineWidth: 1)
                                 )
                             }
                         }

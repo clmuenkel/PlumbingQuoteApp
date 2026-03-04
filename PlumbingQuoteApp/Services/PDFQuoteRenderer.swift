@@ -91,24 +91,24 @@ enum PDFQuoteRenderer {
             for item in quote.lineItems {
                 drawText(item.partName, font: .systemFont(ofSize: 11), rect: CGRect(x: left, y: y, width: 260, height: 15))
                 drawText(String(format: "%.2f", item.quantity), font: .systemFont(ofSize: 11), rect: CGRect(x: left + 280, y: y, width: 40, height: 15))
-                drawText(formatCurrency(item.unitPrice), font: .systemFont(ofSize: 11), rect: CGRect(x: left + 340, y: y, width: 90, height: 15))
-                drawText(formatCurrency(item.unitPrice * item.quantity), font: .systemFont(ofSize: 11), rect: CGRect(x: right - 90, y: y, width: 90, height: 15))
+                drawText(CurrencyFormatter.usd(item.unitPrice), font: .systemFont(ofSize: 11), rect: CGRect(x: left + 340, y: y, width: 90, height: 15))
+                drawText(CurrencyFormatter.usd(item.unitPrice * item.quantity), font: .systemFont(ofSize: 11), rect: CGRect(x: right - 90, y: y, width: 90, height: 15))
                 y += 16
                 if y > 660 { break }
             }
 
             y += 10
             drawText("Parts Subtotal", font: .systemFont(ofSize: 12), rect: CGRect(x: right - 180, y: y, width: 100, height: 16))
-            drawText(formatCurrency(quote.computedPartsTotal), font: .boldSystemFont(ofSize: 12), rect: CGRect(x: right - 90, y: y, width: 90, height: 16))
+            drawText(CurrencyFormatter.usd(quote.computedPartsTotal), font: .boldSystemFont(ofSize: 12), rect: CGRect(x: right - 90, y: y, width: 90, height: 16))
             y += 16
             drawText("Labor", font: .systemFont(ofSize: 12), rect: CGRect(x: right - 180, y: y, width: 100, height: 16))
-            drawText(formatCurrency(quote.computedLaborTotal), font: .boldSystemFont(ofSize: 12), rect: CGRect(x: right - 90, y: y, width: 90, height: 16))
+            drawText(CurrencyFormatter.usd(quote.computedLaborTotal), font: .boldSystemFont(ofSize: 12), rect: CGRect(x: right - 90, y: y, width: 90, height: 16))
             y += 16
             drawText("Tax", font: .systemFont(ofSize: 12), rect: CGRect(x: right - 180, y: y, width: 100, height: 16))
-            drawText(formatCurrency(quote.computedTax), font: .boldSystemFont(ofSize: 12), rect: CGRect(x: right - 90, y: y, width: 90, height: 16))
+            drawText(CurrencyFormatter.usd(quote.computedTax), font: .boldSystemFont(ofSize: 12), rect: CGRect(x: right - 90, y: y, width: 90, height: 16))
             y += 18
             drawText("TOTAL", font: .boldSystemFont(ofSize: 14), rect: CGRect(x: right - 180, y: y, width: 100, height: 18))
-            drawText(formatCurrency(quote.computedTotal), font: .boldSystemFont(ofSize: 14), rect: CGRect(x: right - 90, y: y, width: 90, height: 18))
+            drawText(CurrencyFormatter.usd(quote.computedTotal), font: .boldSystemFont(ofSize: 14), rect: CGRect(x: right - 90, y: y, width: 90, height: 18))
             y += 28
 
             drawText("Warranty: \(quote.warrantyMonths) months", font: .systemFont(ofSize: 12), rect: CGRect(x: left, y: y, width: 260, height: 16))
@@ -133,10 +133,4 @@ enum PDFQuoteRenderer {
         return (data, url)
     }
 
-    private static func formatCurrency(_ value: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = "USD"
-        return formatter.string(from: NSNumber(value: value)) ?? "$\(value)"
-    }
 }

@@ -19,7 +19,7 @@ struct QuoteEditView: View {
                         Text("\(tierName) Total")
                             .font(.headline)
                         Spacer()
-                        Text(formatCurrency(viewModel.total))
+                        Text(CurrencyFormatter.usd(viewModel.total))
                             .font(.headline)
                     }
                 }
@@ -52,7 +52,7 @@ struct QuoteEditView: View {
                             HStack {
                                 Text("Line Total")
                                 Spacer()
-                                Text(formatCurrency(item.lineTotal))
+                                Text(CurrencyFormatter.usd(item.lineTotal))
                                     .fontWeight(.semibold)
                             }
                         }
@@ -88,11 +88,15 @@ struct QuoteEditView: View {
                     Section {
                         Text(error)
                             .font(.caption)
-                            .foregroundStyle(.red)
+                            .foregroundStyle(AppTheme.error)
                     }
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(AppTheme.bg)
             .navigationTitle("Edit \(tierName)")
+            .toolbarBackground(AppTheme.bg, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") { dismiss() }
@@ -100,8 +104,8 @@ struct QuoteEditView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(viewModel.isSaving ? "Saving..." : "Save") {
                         Task {
-                            if await viewModel.save() {
-                                onSaved(viewModel.buildUpdatedQuote())
+                            if let updatedQuote = await viewModel.save() {
+                                onSaved(updatedQuote)
                                 dismiss()
                             }
                         }
@@ -123,15 +127,8 @@ struct QuoteEditView: View {
         HStack {
             Text(title)
             Spacer()
-            Text(formatCurrency(value))
+            Text(CurrencyFormatter.usd(value))
                 .fontWeight(bold ? .bold : .regular)
         }
-    }
-
-    private func formatCurrency(_ value: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = "USD"
-        return formatter.string(from: NSNumber(value: value)) ?? "$\(value)"
     }
 }

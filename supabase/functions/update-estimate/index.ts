@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.8";
+import { AppError, corsHeaders, createId, jsonResponse, requireBearerToken } from "../_shared/http.ts";
 
 type EstimateStatus = "draft" | "sent" | "accepted" | "rejected";
 
@@ -9,22 +10,7 @@ type UpdateEstimateRequest = {
   signatureBase64?: string;
 };
 
-class AppError extends Error {
-  status: number;
-  code: string;
-
-  constructor(status: number, code: string, message: string) {
-    super(message);
-    this.status = status;
-    this.code = code;
-  }
-}
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "PATCH, OPTIONS",
-};
+const CORS_METHODS = "PATCH, OPTIONS";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
@@ -37,23 +23,12 @@ const admin = createClient(supabaseUrl, serviceRoleKey, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
 
-function jsonResponse(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
-
 function base64ToBytes(base64OrDataUrl: string): Uint8Array {
   const payload = base64OrDataUrl.includes(",") ? base64OrDataUrl.split(",")[1] : base64OrDataUrl;
   const decoded = atob(payload);
   const bytes = new Uint8Array(decoded.length);
   for (let i = 0; i < decoded.length; i += 1) bytes[i] = decoded.charCodeAt(i);
   return bytes;
-}
-
-function createId(prefix: string): string {
-  return `${prefix}_${crypto.randomUUID().replace(/-/g, "")}`;
 }
 
 const allowedStatuses: EstimateStatus[] = ["draft", "sent", "accepted", "rejected"];
@@ -65,15 +40,11 @@ const allowedTransitions: Record<EstimateStatus, EstimateStatus[]> = {
 };
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
-  if (req.method !== "PATCH") return jsonResponse({ error: "Method not allowed", code: "method_not_allowed" }, 405);
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders(req, CORS_METHODS) });
+  if (req.method !== "PATCH") return jsonResponse(req, { error: "Method not allowed", code: "method_not_allowed" }, 405, CORS_METHODS);
 
   try {
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      throw new AppError(401, "missing_bearer_token", "Missing bearer token");
-    }
-    const token = authHeader.replace("Bearer ", "");
+    const token = requireBearerToken(req);
     const { data: userData, error: userError } = await admin.auth.getUser(token);
     if (userError || !userData.user) throw new AppError(401, "unauthorized", "Unauthorized");
     const authUser = userData.user;
@@ -177,11 +148,11 @@ Deno.serve(async (req) => {
       throw new Error(`Could not update estimate: ${updateRes.error?.message ?? "unknown"}`);
     }
 
-    return jsonResponse({
+    return jsonResponse(req, {
       ok: true,
       estimate: updateRes.data,
       signaturePath,
-    });
+    }, 200, CORS_METHODS);
   } catch (error) {
     const logPayload = {
       id: createId("err"),
@@ -195,9 +166,9 @@ Deno.serve(async (req) => {
     await admin.from("error_logs").insert(logPayload);
 
     if (error instanceof AppError) {
-      return jsonResponse({ error: error.message, code: error.code }, error.status);
+      return jsonResponse(req, { error: error.message, code: error.code }, error.status, CORS_METHODS);
     }
     const message = error instanceof Error ? error.message : "Unknown error";
-    return jsonResponse({ error: message, code: "update_failed" }, 500);
+    return jsonResponse(req, { error: message, code: "update_failed" }, 500, CORS_METHODS);
   }
 });

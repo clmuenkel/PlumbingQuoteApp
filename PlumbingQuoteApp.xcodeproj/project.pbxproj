@@ -27,6 +27,9 @@
 		856F6DCC95E67735AD66AFF2 /* CompanySettingsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52B46A2656A1BDDE1457360 /* CompanySettingsService.swift */; };
 		90934CC84B34AE5AC539A4E3 /* AIQuoteService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8B22A6A881C7DA30AF48DD /* AIQuoteService.swift */; };
 		9FBABD7E830327BF9542A187 /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26CA1CE89E174C54C545BD04 /* Secrets.swift */; };
+		AA11BB22CC33DD44EE55FF66 /* QuoteDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF68 /* QuoteDetailViewModel.swift */; };
+		AA11BB22CC33DD44EE55FF67 /* QuoteDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF69 /* QuoteDetailView.swift */; };
+		AB12CD34EF56AB78CD90EF12 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB12CD34EF56AB78CD90EF13 /* Theme.swift */; };
 		AF916FD78E2E2E7E172E11EC /* MultiImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A684F6006CFBA162CA4F3A2 /* MultiImagePicker.swift */; };
 		B7562A2B813A3666342BD47B /* CameraService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 732E9140AAAD97097EB2DC77 /* CameraService.swift */; };
 		BBDDCF4B6639182ED2FF0C28 /* QuoteEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89649647F92F041AFD5DCA6D /* QuoteEditView.swift */; };
@@ -62,6 +65,9 @@
 		9101B299A321CB19151A9EB9 /* Secrets.swift.example */ = {isa = PBXFileReference; lastKnownFileType = text; path = Secrets.swift.example; sourceTree = "<group>"; };
 		911BA7CFE0545FB0392F407C /* HapticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticsService.swift; sourceTree = "<group>"; };
 		99CBCA5E001002B4BAB4D915 /* AnalyticsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsViewModel.swift; sourceTree = "<group>"; };
+		AA11BB22CC33DD44EE55FF68 /* QuoteDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuoteDetailViewModel.swift; sourceTree = "<group>"; };
+		AA11BB22CC33DD44EE55FF69 /* QuoteDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuoteDetailView.swift; sourceTree = "<group>"; };
+		AB12CD34EF56AB78CD90EF13 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		A52B46A2656A1BDDE1457360 /* CompanySettingsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanySettingsService.swift; sourceTree = "<group>"; };
 		A9A7BC8D11011516E12164CA /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
 		B343FE90D7722A013B4F39F3 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
@@ -125,6 +131,7 @@
 				99CBCA5E001002B4BAB4D915 /* AnalyticsViewModel.swift */,
 				51EB9F8BEBA2685F7EE511C8 /* AuthViewModel.swift */,
 				BA342AB9B6CCFD2C4F1969AE /* HistoryViewModel.swift */,
+				AA11BB22CC33DD44EE55FF68 /* QuoteDetailViewModel.swift */,
 				8E5FF5EE25EA458521D8662C /* QuoteEditViewModel.swift */,
 				16C5334CBD0C6B6515FBF8A7 /* QuoteViewModel.swift */,
 			);
@@ -136,6 +143,7 @@
 			children = (
 				B343FE90D7722A013B4F39F3 /* Config.swift */,
 				0ACD5F17BB2E20313999B835 /* PlumbingQuoteAppApp.swift */,
+				AB12CD34EF56AB78CD90EF13 /* Theme.swift */,
 				26CA1CE89E174C54C545BD04 /* Secrets.swift */,
 				9101B299A321CB19151A9EB9 /* Secrets.swift.example */,
 				BDB3192A4782992446CA17D0 /* Models */,
@@ -171,6 +179,7 @@
 				D5BFEC095465D3C653ADD10B /* LoginView.swift */,
 				5473F917167A58CC3E552EC5 /* MenuView.swift */,
 				89649647F92F041AFD5DCA6D /* QuoteEditView.swift */,
+				AA11BB22CC33DD44EE55FF69 /* QuoteDetailView.swift */,
 				F099798BFDBFEE0E03746EA0 /* QuoteHistoryView.swift */,
 				73DFF3A98CDDD05F09CB3273 /* QuoteResultView.swift */,
 				E99C50AC1631D6688B03AB9C /* SettingsView.swift */,
@@ -272,7 +281,10 @@
 				279AEB3BCEF1E2789B052333 /* NetworkMonitor.swift in Sources */,
 				792DEF3B51E580815DF632D1 /* PDFQuoteRenderer.swift in Sources */,
 				785F1AC534C41CBB1B007276 /* PlumbingQuoteAppApp.swift in Sources */,
+				AB12CD34EF56AB78CD90EF12 /* Theme.swift in Sources */,
 				BBDDCF4B6639182ED2FF0C28 /* QuoteEditView.swift in Sources */,
+				AA11BB22CC33DD44EE55FF67 /* QuoteDetailView.swift in Sources */,
+				AA11BB22CC33DD44EE55FF66 /* QuoteDetailViewModel.swift in Sources */,
 				775D2D9A47AC7D14232A6707 /* QuoteEditViewModel.swift in Sources */,
 				61BEEDB5EF6159B59C43346D /* QuoteHistoryView.swift in Sources */,
 				5DC47949A45FFE3AB991475C /* QuoteResultView.swift in Sources */,
@@ -416,7 +428,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 5CN4LR4Q8D;
+				DEVELOPMENT_TEAM = W873G7H4U5;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = PlumbingQuoteApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -425,7 +437,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.hometitan.plumbquote;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ducav1.plumbquote;
 				SDKROOT = iphoneos;
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -441,7 +453,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 5CN4LR4Q8D;
+				DEVELOPMENT_TEAM = W873G7H4U5;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = PlumbingQuoteApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -450,7 +462,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.hometitan.plumbquote;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ducav1.plumbquote;
 				SDKROOT = iphoneos;
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
