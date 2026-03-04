@@ -1,0 +1,37 @@
+name: Refresh Competitor and Parts Pricing
+
+on:
+  schedule:
+    - cron: "0 9 * * 1"
+  workflow_dispatch:
+
+jobs:
+  refresh-pricing:
+    runs-on: ubuntu-latest
+    env:
+      REFRESH_URL: ${{ secrets.SUPABASE_FUNCTION_REFRESH_URL }}
+      REFRESH_SECRET: ${{ secrets.REFRESH_COMPETITOR_PRICING_SECRET }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
+      TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Trigger edge function refresh
+        run: |
+          curl -sS -X POST "$REFRESH_URL" \
+            -H "Content-Type: application/json" \
+            -H "x-refresh-token: $REFRESH_SECRET" \
+            -d '{"urls":[]}'
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install script dependencies
+        run: pip install -r scripts/requirements.txt
+      - name: Refresh parts catalogs
+        run: |
+          python scripts/scrape_parts_homedepot.py
+          python scripts/scrape_parts_lowes.py

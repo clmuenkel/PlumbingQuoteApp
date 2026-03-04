@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct SettingsView: View {
     private enum Field {
@@ -18,7 +19,11 @@ struct SettingsView: View {
     @State private var isSaving = false
     @State private var error: String?
     @State private var saveMessage: String?
+    @State private var importMessage: String?
+    @State private var showPriceBookImporter = false
+    @State private var isImportingPriceBook = false
     @State private var taxRatePercent: String = "8"
+    @State private var pdfTerms: String = CompanySettingsService.defaultPdfTerms
     @FocusState private var focusedField: Field?
 
     var body: some View {
@@ -55,6 +60,31 @@ struct SettingsView: View {
                     .focused($focusedField, equals: .taxRate)
                     .frame(minWidth: 90, idealWidth: 110, maxWidth: 140)
                     Text("%")
+                        .foregroundStyle(AppTheme.muted)
+                }
+            }
+
+            Section("Quote PDF") {
+                TextEditor(text: $pdfTerms)
+                    .frame(minHeight: 110)
+            }
+
+            Section("Price Book") {
+                Button {
+                    showPriceBookImporter = true
+                } label: {
+                    HStack {
+                        if isImportingPriceBook {
+                            ProgressView()
+                        }
+                        Text(isImportingPriceBook ? "Importing..." : "Import Price Book CSV/XLSX")
+                    }
+                }
+                .disabled(isImportingPriceBook)
+
+                if let importMessage {
+                    Text(importMessage)
+                        .font(.caption)
                         .foregroundStyle(AppTheme.muted)
                 }
             }
@@ -113,6 +143,18 @@ struct SettingsView: View {
                 }
             }
         }
+        .fileImporter(
+            isPresented: $showPriceBookImporter,
+            allowedContentTypes: [
+                .commaSeparatedText,
+                UTType(filenameExtension: "csv") ?? .commaSeparatedText,
+                UTType(filenameExtension: "xlsx") ?? .data
+            ],
+            allowsMultipleSelection: false
+        ) { result in
+            guard case .success(let urls) = result, let url = urls.first else { return }
+            Task { await importPriceBook(from: url) }
+        }
     }
 
     private func loadSettings() async {
@@ -121,6 +163,8 @@ struct SettingsView: View {
         error = nil
         settings = await CompanySettingsService.shared.fetchCompanySettings()
         taxRatePercent = String(format: "%.2f", settings.taxRate * 100)
+        pdfTerms = UserDefaults.standard.string(forKey: CompanySettingsService.pdfTermsDefaultsKey)
+            ?? CompanySettingsService.defaultPdfTerms
     }
 
     private func saveSettings() async {
@@ -136,9 +180,54 @@ struct SettingsView: View {
 
         do {
             try await CompanySettingsService.shared.updateCompanySettings(settings)
+            UserDefaults.standard.set(pdfTerms, forKey: CompanySettingsService.pdfTermsDefaultsKey)
             saveMessage = "Settings saved."
         } catch {
             self.error = "Could not save settings: \(error.localizedDescription)"
+        }
+    }
+
+    private func importPriceBook(from url: URL) async {
+        isImportingPriceBook = true
+        defer { isImportingPriceBook = false }
+        importMessage = nil
+
+        guard let fileData = try? Data(contentsOf: url) else {
+            importMessage = "Could not read selected file."
+            return
+        }
+        let fileName = url.lastPathComponent
+
+        do {
+            let session = try await SupabaseService.shared.client.auth.session
+            guard let endpoint = URL(string: "\(AppConfig.supabaseURL)/functions/v1/import-price-book") else {
+                importMessage = "Invalid function endpoint."
+                return
+            }
+
+            var request = URLRequest(url: endpoint)
+            request.httpMethod = "POST"
+            request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.addValue("Bearer \(session.accessToken)", forHTTPHeaderField: "Authorization")
+            request.timeoutInterval = 120
+            request.httpBody = try JSONSerialization.data(withJSONObject: [
+                "fileName": fileName,
+                "fileBase64": fileData.base64EncodedString()
+            ])
+
+            let (responseData, response) = try await URLSession.shared.data(for: request)
+            guard let http = response as? HTTPURLResponse else {
+                importMessage = "Import failed: no server response."
+                return
+            }
+            guard (200...299).contains(http.statusCode) else {
+                let message = String(data: responseData, encoding: .utf8) ?? "Unknown import error."
+                importMessage = "Import failed: \(message)"
+                return
+            }
+            importMessage = "Price book import completed."
+        } catch {
+            importMessage = "Import failed: \(error.localizedDescription)"
         }
     }
 }

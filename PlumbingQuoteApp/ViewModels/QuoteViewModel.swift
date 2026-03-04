@@ -25,7 +25,10 @@ class QuoteViewModel: ObservableObject {
     @Published var additionalNotes: String = ""
     @Published var customerName: String = ""
     @Published var customerPhone: String = ""
+    @Published var customerEmail: String = ""
     @Published var customerAddress: String = ""
+    @Published var queuedQuoteCount: Int = 0
+    @Published var customerSuggestions: [CustomerService.Suggestion] = []
 
     // Output state
     @Published var quoteResult: QuoteResult?
@@ -43,12 +46,23 @@ class QuoteViewModel: ObservableObject {
     private let aiService = AIQuoteService()
     private var analysisTask: Task<Void, Never>?
     private var voiceServiceCancellable: AnyCancellable?
+    private var networkCancellable: AnyCancellable?
+    private var queueProcessingTask: Task<Void, Never>?
 
     init() {
+        queuedQuoteCount = OfflineQueueService.shared.pendingCount()
         voiceServiceCancellable = voiceService.objectWillChange
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
                 self?.objectWillChange.send()
+            }
+        networkCancellable = NetworkMonitor.shared.$isConnected
+            .removeDuplicates()
+            .sink { [weak self] isConnected in
+                guard let self else { return }
+                if isConnected {
+                    self.queueProcessingTask = Task { await self.processQueuedQuotesIfNeeded() }
+                }
             }
     }
 
@@ -66,7 +80,9 @@ class QuoteViewModel: ObservableObject {
         additionalNotes = ""
         customerName = ""
         customerPhone = ""
+        customerEmail = ""
         customerAddress = ""
+        customerSuggestions = []
         quoteResult = nil
         showQuoteResult = false
         error = nil
@@ -76,9 +92,11 @@ class QuoteViewModel: ObservableObject {
     func startGenerateQuote(forceOverride: Bool = false) {
         guard analysisTask == nil else { return }
         guard isConnected else {
-            error = "No internet connection. Reconnect and tap Retry."
+            enqueueCurrentInputForLater()
+            queuedQuoteCount = OfflineQueueService.shared.pendingCount()
+            error = "No internet connection. Quote saved to offline queue and will auto-submit when reconnected."
             ErrorLogger.log(
-                message: "Quote generation blocked: device offline",
+                message: "Quote generation queued: device offline",
                 context: ["source": "QuoteViewModel.startGenerateQuote"]
             )
             showDeveloperAlert(
@@ -159,6 +177,7 @@ class QuoteViewModel: ObservableObject {
             additionalNotes: additionalNotes.isEmpty ? nil : additionalNotes,
             customerName: customerName.isEmpty ? nil : customerName,
             customerPhone: customerPhone.isEmpty ? nil : customerPhone,
+            customerEmail: customerEmail.isEmpty ? nil : customerEmail,
             customerAddress: customerAddress.isEmpty ? nil : customerAddress,
             allowOverride: forceOverride
         )
@@ -225,5 +244,91 @@ class QuoteViewModel: ObservableObject {
     private func showDeveloperAlert(title: String, message: String) {
         guard Self.developerMode else { return }
         developerAlert = DeveloperAlertInfo(title: title, message: message)
+    }
+
+    func refreshCustomerSuggestions(for query: String) {
+        Task {
+            let suggestions = await CustomerService.shared.searchCustomers(query: query)
+            await MainActor.run {
+                self.customerSuggestions = suggestions
+            }
+        }
+    }
+
+    func applyCustomerSuggestion(_ suggestion: CustomerService.Suggestion) {
+        customerName = suggestion.fullName
+        customerPhone = suggestion.phone ?? customerPhone
+        customerEmail = suggestion.email ?? customerEmail
+        customerAddress = suggestion.address ?? customerAddress
+        customerSuggestions = []
+    }
+
+    func clearCustomerSuggestions() {
+        customerSuggestions = []
+    }
+
+    func applyJobTemplate(_ template: String) {
+        let existing = additionalNotes.trimmingCharacters(in: .whitespacesAndNewlines)
+        if existing.isEmpty {
+            additionalNotes = template
+        } else {
+            additionalNotes = existing + "\n" + template
+        }
+    }
+
+    private func enqueueCurrentInputForLater() {
+        let payload = voiceService.audioPayload()
+        OfflineQueueService.shared.enqueue(
+            images: capturedImages,
+            audioBase64: payload?.base64,
+            audioMimeType: payload?.mimeType,
+            voiceTranscript: voiceService.transcript.isEmpty ? nil : voiceService.transcript,
+            additionalNotes: additionalNotes.isEmpty ? nil : additionalNotes,
+            customerName: customerName.isEmpty ? nil : customerName,
+            customerPhone: customerPhone.isEmpty ? nil : customerPhone,
+            customerEmail: customerEmail.isEmpty ? nil : customerEmail,
+            customerAddress: customerAddress.isEmpty ? nil : customerAddress
+        )
+    }
+
+    private func processQueuedQuotesIfNeeded() async {
+        guard !isAnalyzing else { return }
+        let queued = OfflineQueueService.shared.drain()
+        guard !queued.isEmpty else {
+            queuedQuoteCount = 0
+            return
+        }
+
+        var failed: [OfflineQueueService.QueuedQuoteInput] = []
+
+        for item in queued {
+            let images = item.imagesBase64.compactMap { Data(base64Encoded: $0) }.compactMap { UIImage(data: $0) }
+            if images.isEmpty {
+                continue
+            }
+            let result = await aiService.analyzeAndQuote(
+                images: images,
+                audioBase64: item.audioBase64,
+                audioMimeType: item.audioMimeType,
+                voiceTranscript: item.voiceTranscript,
+                additionalNotes: item.additionalNotes,
+                customerName: item.customerName,
+                customerPhone: item.customerPhone,
+                customerEmail: item.customerEmail,
+                customerAddress: item.customerAddress,
+                allowOverride: true
+            )
+            if result == nil {
+                failed.append(item)
+            } else if quoteResult == nil {
+                quoteResult = result
+                showQuoteResult = true
+            }
+        }
+
+        if !failed.isEmpty {
+            OfflineQueueService.shared.putBack(failed)
+        }
+        queuedQuoteCount = OfflineQueueService.shared.pendingCount()
     }
 }

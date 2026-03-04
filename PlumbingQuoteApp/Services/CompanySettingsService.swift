@@ -4,6 +4,8 @@ import Supabase
 final class CompanySettingsService {
     static let shared = CompanySettingsService()
     static let defaultTaxRate: Double = 0.0825
+    static let defaultPdfTerms: String = "This quote is valid for 30 days unless otherwise noted."
+    static let pdfTermsDefaultsKey = "plumbquote.company.pdfterms.v1"
     private let supabase = SupabaseService.shared.client
 
     private init() {}
@@ -47,7 +49,8 @@ final class CompanySettingsService {
                 name: (row.company_name?.isEmpty == false ? row.company_name : nil) ?? CompanyInfo.default.name,
                 phone: row.company_phone ?? "",
                 address: row.company_address ?? "",
-                logo: nil
+                logo: nil,
+                terms: UserDefaults.standard.string(forKey: Self.pdfTermsDefaultsKey) ?? Self.defaultPdfTerms
             )
         } catch {
             return .default

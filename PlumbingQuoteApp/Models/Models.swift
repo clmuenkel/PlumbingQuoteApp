@@ -183,6 +183,7 @@ struct QuoteResult: Identifiable {
     let voiceTranscript: String?
     let customerName: String?
     let customerPhone: String?
+    let customerEmail: String?
     let customerAddress: String?
     let failedUploads: [String]
 
@@ -198,6 +199,7 @@ struct QuoteResult: Identifiable {
         voiceTranscript: String? = nil,
         customerName: String? = nil,
         customerPhone: String? = nil,
+        customerEmail: String? = nil,
         customerAddress: String? = nil,
         failedUploads: [String] = []
     ) {
@@ -212,6 +214,7 @@ struct QuoteResult: Identifiable {
         self.voiceTranscript = voiceTranscript
         self.customerName = customerName
         self.customerPhone = customerPhone
+        self.customerEmail = customerEmail
         self.customerAddress = customerAddress
         self.failedUploads = failedUploads
     }
@@ -279,6 +282,7 @@ struct AnalyzeResponse: Decodable {
     let estimateNumber: Int?
     let customerName: String?
     let customerPhone: String?
+    let customerEmail: String?
     let customerAddress: String?
     let failedUploads: [String]?
     let issue: IssuePayload
@@ -302,6 +306,7 @@ struct AnalyzeResponse: Decodable {
             voiceTranscript: voiceTranscript,
             customerName: customerName,
             customerPhone: customerPhone,
+            customerEmail: customerEmail,
             customerAddress: customerAddress,
             failedUploads: failedUploads ?? []
         )

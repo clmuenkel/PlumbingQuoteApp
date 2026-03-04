@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import PencilKit
 
 struct MultiImagePicker: View {
     @Binding var images: [UIImage]
@@ -11,7 +12,7 @@ struct MultiImagePicker: View {
     @State private var showImagePicker = false
     @State private var sourceType: UIImagePickerController.SourceType = .camera
     @State private var pendingImage: UIImage?
-    @State private var previewImage: UIImage?
+    @State private var annotationIndex: Int?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -51,7 +52,7 @@ struct MultiImagePicker: View {
                                     .frame(width: thumbnailSize, height: thumbnailSize)
                                     .clipShape(RoundedRectangle(cornerRadius: 12))
                                     .onTapGesture {
-                                        previewImage = image
+                                        annotationIndex = index
                                     }
 
                                 Button {
@@ -108,25 +109,18 @@ struct MultiImagePicker: View {
                 .ignoresSafeArea()
         }
         .sheet(isPresented: Binding(
-            get: { previewImage != nil },
-            set: { if !$0 { previewImage = nil } }
+            get: { annotationIndex != nil },
+            set: { if !$0 { annotationIndex = nil } }
         )) {
-            ZStack(alignment: .topTrailing) {
-                Color.black.ignoresSafeArea()
-                if let previewImage {
-                    Image(uiImage: previewImage)
-                        .resizable()
-                        .scaledToFit()
-                        .padding()
-                }
-                Button {
-                    previewImage = nil
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 28))
-                        .foregroundStyle(.white)
-                        .padding()
-                }
+            if let index = annotationIndex, images.indices.contains(index) {
+                PhotoAnnotationView(
+                    image: images[index],
+                    onCancel: { annotationIndex = nil },
+                    onSave: { updated in
+                        images[index] = updated
+                        annotationIndex = nil
+                    }
+                )
             }
         }
     }
@@ -160,5 +154,101 @@ struct MultiImagePicker: View {
 
     private var cameraIconSize: CGFloat {
         dynamicTypeSize.isAccessibilitySize ? 30 : (isCompactWidth ? 24 : 26)
+    }
+}
+
+private struct PhotoAnnotationView: View {
+    let image: UIImage
+    let onCancel: () -> Void
+    let onSave: (UIImage) -> Void
+
+    @State private var drawing = PKDrawing()
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Color.black.ignoresSafeArea()
+                GeometryReader { proxy in
+                    let size = fittedSize(in: proxy.size, image: image)
+                    let origin = CGPoint(
+                        x: (proxy.size.width - size.width) / 2,
+                        y: (proxy.size.height - size.height) / 2
+                    )
+                    ZStack {
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: size.width, height: size.height)
+
+                        DrawingCanvas(drawing: $drawing)
+                            .frame(width: size.width, height: size.height)
+                    }
+                    .position(x: origin.x + size.width / 2, y: origin.y + size.height / 2)
+                }
+            }
+            .navigationTitle("Annotate Photo")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Cancel") { onCancel() }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Save") {
+                        onSave(merge(image: image, drawing: drawing))
+                    }
+                }
+            }
+        }
+    }
+
+    private func fittedSize(in container: CGSize, image: UIImage) -> CGSize {
+        guard image.size.width > 0, image.size.height > 0 else { return container }
+        let ratio = min(container.width / image.size.width, container.height / image.size.height)
+        return CGSize(width: image.size.width * ratio, height: image.size.height * ratio)
+    }
+
+    private func merge(image: UIImage, drawing: PKDrawing) -> UIImage {
+        let format = UIGraphicsImageRendererFormat.default()
+        format.scale = image.scale
+        let renderer = UIGraphicsImageRenderer(size: image.size, format: format)
+        return renderer.image { _ in
+            image.draw(in: CGRect(origin: .zero, size: image.size))
+            drawing.image(from: CGRect(origin: .zero, size: image.size), scale: image.scale)
+                .draw(in: CGRect(origin: .zero, size: image.size))
+        }
+    }
+}
+
+private struct DrawingCanvas: UIViewRepresentable {
+    @Binding var drawing: PKDrawing
+
+    func makeUIView(context: Context) -> PKCanvasView {
+        let view = PKCanvasView()
+        view.backgroundColor = .clear
+        view.isOpaque = false
+        view.drawingPolicy = .anyInput
+        view.tool = PKInkingTool(.pen, color: .systemRed, width: 5)
+        view.delegate = context.coordinator
+        return view
+    }
+
+    func updateUIView(_ uiView: PKCanvasView, context: Context) {
+        uiView.drawing = drawing
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(drawing: $drawing)
+    }
+
+    final class Coordinator: NSObject, PKCanvasViewDelegate {
+        @Binding var drawing: PKDrawing
+
+        init(drawing: Binding<PKDrawing>) {
+            _drawing = drawing
+        }
+
+        func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
+            drawing = canvasView.drawing
+        }
     }
 }

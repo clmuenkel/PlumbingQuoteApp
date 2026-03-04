@@ -44,7 +44,7 @@ final class QuoteDetailViewModel: ObservableObject {
                     customerNote,
                     internalNote,
                     createdAt,
-                    Customer(firstName,lastName),
+                    Customer(firstName,lastName,phone,email,address),
                     EstimateOption(
                         id,
                         tier,
@@ -113,8 +113,9 @@ final class QuoteDetailViewModel: ObservableObject {
             createdAt: row.createdAtDate,
             voiceTranscript: row.voiceTranscript,
             customerName: customerName.isEmpty ? nil : customerName,
-            customerPhone: nil,
-            customerAddress: nil,
+            customerPhone: row.customer?.phone,
+            customerEmail: row.customer?.email,
+            customerAddress: row.customer?.address,
             failedUploads: []
         )
     }
@@ -272,6 +273,9 @@ private struct EstimateDetailRow: Decodable {
 private struct EstimateCustomerRow: Decodable {
     let firstName: String?
     let lastName: String?
+    let phone: String?
+    let email: String?
+    let address: String?
 }
 
 private struct EstimateOptionDetailRow: Decodable {

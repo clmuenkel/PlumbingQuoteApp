@@ -46,12 +46,28 @@ struct AnalyticsDashboardView: View {
         let totalQuotes = viewModel.dailySummary.reduce(0) { $0 + $1.totalQuotes }
         let accepted = viewModel.dailySummary.reduce(0) { $0 + $1.accepted }
         let revenue = viewModel.dailySummary.reduce(0) { $0 + $1.acceptedRevenue }
+        let projected = viewModel.dailySummary.reduce(0) { $0 + $1.projectedRevenue }
+        let viewed = viewModel.dailySummary.reduce(0) { $0 + $1.viewed }
+        let monthSplit = splitCurrentVsPreviousMonth()
+        let currentMonthRevenue = monthSplit.current.reduce(0) { $0 + $1.acceptedRevenue }
+        let currentMonthProjected = monthSplit.current.reduce(0) { $0 + $1.projectedRevenue }
         let acceptanceRate = totalQuotes > 0 ? (Double(accepted) / Double(totalQuotes)) * 100 : 0
+        let viewRate = totalQuotes > 0 ? (Double(viewed) / Double(totalQuotes)) * 100 : 0
 
         return VStack(spacing: 10) {
             cardRow(title: "Total Quotes", value: "\(totalQuotes)")
             cardRow(title: "Acceptance Rate", value: String(format: "%.1f%%", acceptanceRate))
-            cardRow(title: "Revenue", value: CurrencyFormatter.usd(revenue))
+            cardRow(title: "Viewed Rate", value: String(format: "%.1f%%", viewRate))
+            cardRow(
+                title: "Revenue",
+                value: CurrencyFormatter.usd(revenue),
+                trend: monthTrend(current: currentMonthRevenue, previous: previousMonthRevenue)
+            )
+            cardRow(
+                title: "Projected Revenue",
+                value: CurrencyFormatter.usd(projected),
+                trend: monthTrend(current: currentMonthProjected, previous: previousMonthProjectedRevenue)
+            )
         }
     }
 
@@ -140,10 +156,17 @@ struct AnalyticsDashboardView: View {
         .shadow(color: .black.opacity(0.06), radius: 4, y: 1)
     }
 
-    private func cardRow(title: String, value: String) -> some View {
+    private func cardRow(title: String, value: String, trend: (icon: String, text: String, positive: Bool)? = nil) -> some View {
         HStack {
-            Text(title)
-                .font(.subheadline)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.subheadline)
+                if let trend {
+                    Label(trend.text, systemImage: trend.icon)
+                        .font(.caption2)
+                        .foregroundStyle(trend.positive ? AppTheme.success : AppTheme.error)
+                }
+            }
             Spacer()
             Text(value)
                 .font(.headline)
@@ -152,6 +175,40 @@ struct AnalyticsDashboardView: View {
         .background(AppTheme.surface)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(color: .black.opacity(0.06), radius: 4, y: 1)
+    }
+
+    private var previousMonthRevenue: Double {
+        let split = splitCurrentVsPreviousMonth()
+        return split.previous.reduce(0) { $0 + $1.acceptedRevenue }
+    }
+
+    private var previousMonthProjectedRevenue: Double {
+        let split = splitCurrentVsPreviousMonth()
+        return split.previous.reduce(0) { $0 + $1.projectedRevenue }
+    }
+
+    private func splitCurrentVsPreviousMonth() -> (current: [AnalyticsViewModel.DailyStat], previous: [AnalyticsViewModel.DailyStat]) {
+        let calendar = Calendar.current
+        let now = Date()
+        let currentMonth = calendar.dateComponents([.year, .month], from: now)
+        let previousDate = calendar.date(byAdding: .month, value: -1, to: now) ?? now
+        let previousMonth = calendar.dateComponents([.year, .month], from: previousDate)
+
+        let current = viewModel.dailySummary.filter {
+            calendar.dateComponents([.year, .month], from: $0.date) == currentMonth
+        }
+        let previous = viewModel.dailySummary.filter {
+            calendar.dateComponents([.year, .month], from: $0.date) == previousMonth
+        }
+        return (current, previous)
+    }
+
+    private func monthTrend(current: Double, previous: Double) -> (icon: String, text: String, positive: Bool)? {
+        guard previous > 0 else { return nil }
+        let pct = ((current - previous) / previous) * 100
+        let positive = pct >= 0
+        let icon = positive ? "arrow.up.right" : "arrow.down.right"
+        return (icon, String(format: "%.1f%% vs last month", abs(pct)), positive)
     }
 
 }

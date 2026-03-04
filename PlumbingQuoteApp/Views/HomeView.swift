@@ -5,6 +5,7 @@ struct HomeView: View {
     private enum Field {
         case name
         case phone
+        case email
         case address
         case notes
     }
@@ -39,6 +40,18 @@ struct HomeView: View {
                         .foregroundStyle(AppTheme.text)
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
+                    if viewModel.queuedQuoteCount > 0 {
+                        HStack(spacing: 8) {
+                            Image(systemName: "clock.badge")
+                            Text("\(viewModel.queuedQuoteCount) quote\(viewModel.queuedQuoteCount == 1 ? "" : "s") queued for upload")
+                                .font(.caption.weight(.semibold))
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(10)
+                        .background(AppTheme.accentLight.opacity(0.28))
+                        .foregroundStyle(AppTheme.text)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
 
                     MultiImagePicker(images: $viewModel.capturedImages, maxImages: 5)
                     if !viewModel.capturedImages.isEmpty {
@@ -49,6 +62,8 @@ struct HomeView: View {
                     }
 
                     customerInfoSection
+
+                    commonJobsSection
 
                     voiceSection
 
@@ -165,6 +180,7 @@ struct HomeView: View {
                 if let result = viewModel.quoteResult {
                     QuoteResultView(
                         result: result,
+                        jobPhotos: viewModel.capturedImages,
                         selectedTier: $viewModel.selectedTier,
                         onDismiss: { viewModel.showQuoteResult = false },
                         onQuoteSaved: { tier, updatedQuote in
@@ -234,6 +250,9 @@ struct HomeView: View {
             }
             .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
                 isKeyboardVisible = false
+            }
+            .onChange(of: viewModel.customerName) { name in
+                viewModel.refreshCustomerSuggestions(for: name)
             }
         }
     }
@@ -461,6 +480,39 @@ struct HomeView: View {
             .background(AppTheme.surface2)
             .clipShape(RoundedRectangle(cornerRadius: 10))
 
+            if !viewModel.customerSuggestions.isEmpty {
+                VStack(spacing: 0) {
+                    ForEach(viewModel.customerSuggestions) { suggestion in
+                        Button {
+                            viewModel.applyCustomerSuggestion(suggestion)
+                        } label: {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(suggestion.fullName)
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(AppTheme.text)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                Text(
+                                    [suggestion.phone, suggestion.email]
+                                        .compactMap { $0 }
+                                        .joined(separator: " • ")
+                                )
+                                .font(.caption)
+                                .foregroundStyle(AppTheme.muted)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 8)
+                        }
+                        .buttonStyle(.plain)
+                        if suggestion.id != viewModel.customerSuggestions.last?.id {
+                            Divider()
+                        }
+                    }
+                }
+                .background(AppTheme.surface2)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
+
             HStack(spacing: 10) {
                 Image(systemName: "phone")
                     .foregroundStyle(AppTheme.muted)
@@ -468,6 +520,20 @@ struct HomeView: View {
                     .keyboardType(.phonePad)
                     .foregroundStyle(AppTheme.text)
                     .focused($focusedField, equals: .phone)
+            }
+            .padding(10)
+            .background(AppTheme.surface2)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+
+            HStack(spacing: 10) {
+                Image(systemName: "envelope")
+                    .foregroundStyle(AppTheme.muted)
+                TextField("Email", text: $viewModel.customerEmail)
+                    .keyboardType(.emailAddress)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+                    .foregroundStyle(AppTheme.text)
+                    .focused($focusedField, equals: .email)
             }
             .padding(10)
             .background(AppTheme.surface2)
@@ -506,6 +572,38 @@ struct HomeView: View {
             .background(AppTheme.surface2)
             .clipShape(RoundedRectangle(cornerRadius: 10))
         }
+        .padding(16)
+        .background(AppTheme.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .shadow(color: .black.opacity(0.06), radius: 4, y: 1)
+    }
+
+    private var commonJobsSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Common Jobs")
+                .font(.subheadline.weight(.semibold))
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
+                ForEach(commonJobTemplates, id: \.self) { template in
+                    Button {
+                        viewModel.applyJobTemplate(template)
+                        focusedField = .notes
+                    } label: {
+                        Text(template)
+                            .font(.caption.weight(.semibold))
+                            .lineLimit(2)
+                            .multilineTextAlignment(.leading)
+                            .frame(maxWidth: .infinity, minHeight: 42, alignment: .leading)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 8)
+                            .background(AppTheme.surface2)
+                            .foregroundStyle(AppTheme.text)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(16)
         .background(AppTheme.surface)
         .clipShape(RoundedRectangle(cornerRadius: 14))
@@ -600,6 +698,19 @@ struct HomeView: View {
                 showDuckEasterEgg = false
             }
         }
+    }
+
+    private var commonJobTemplates: [String] {
+        [
+            "Leaking faucet at kitchen sink",
+            "Toilet keeps running after flush",
+            "Water heater not producing hot water",
+            "Clogged drain with slow kitchen sink flow",
+            "Garbage disposal jammed and humming",
+            "Pipe leak under bathroom vanity",
+            "Outdoor hose bib leaking",
+            "Showerhead low pressure and drip"
+        ]
     }
 }
 

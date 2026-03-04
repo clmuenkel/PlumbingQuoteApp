@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ios-build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create build-time Secrets.swift
+        run: |
+          cat > PlumbingQuoteApp/Secrets.swift << 'SWIFT'
+          enum Secrets {
+              static let supabaseURL = "https://placeholder.supabase.co"
+              static let supabaseAnonKey = "placeholder"
+              static let sentryDSN = ""
+          }
+          SWIFT
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate Xcode Project
+        run: xcodegen generate
+      - name: Build iOS app
+        run: |
+          xcodebuild \
+            -project PlumbingQuoteApp.xcodeproj \
+            -scheme PlumbingQuoteApp \
+            -sdk iphonesimulator \
+            -destination "platform=iOS Simulator,name=iPhone 16" \
+            -configuration Debug \
+            build
+
+  edge-function-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Type-check Edge Functions
+        run: |
+          deno check supabase/functions/analyze-issue/index.ts
+          deno check supabase/functions/update-estimate/index.ts
+          deno check supabase/functions/update-estimate-options/index.ts
+          deno check supabase/functions/refresh-competitor-pricing/index.ts
+          deno check supabase/functions/import-price-book/index.ts
+
+  migration-lint:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Link Supabase project
+        run: supabase link --project-ref vonlblmskyaepfbwkxru
+      - name: Verify migration filenames
+        run: supabase migration list

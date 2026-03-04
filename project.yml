@@ -11,6 +11,9 @@ packages:
   Supabase:
     url: https://github.com/supabase/supabase-swift
     from: 2.0.0
+  Sentry:
+    url: https://github.com/getsentry/sentry-cocoa
+    from: 8.39.0
 targets:
   PlumbingQuoteApp:
     type: application
@@ -30,6 +33,8 @@ targets:
     dependencies:
       - package: Supabase
         product: Supabase
+      - package: Sentry
+        product: Sentry
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.ducav1.plumbquote
@@ -43,3 +48,24 @@ targets:
         SUPPORTS_MACCATALYST: NO
         SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
         SWIFT_EMIT_LOC_STRINGS: YES
+  PlumbingQuoteAppTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: PlumbingQuoteAppTests
+    dependencies:
+      - target: PlumbingQuoteApp
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ducav1.plumbquote.tests
+        GENERATE_INFOPLIST_FILE: YES
+schemes:
+  PlumbingQuoteApp:
+    build:
+      targets:
+        PlumbingQuoteApp: all
+        PlumbingQuoteAppTests: [test]
+    test:
+      targets:
+        - PlumbingQuoteAppTests

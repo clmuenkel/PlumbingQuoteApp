@@ -37,6 +37,7 @@ struct QuoteDetailView: View {
                 .sheet(isPresented: $showFullQuote) {
                     QuoteResultView(
                         result: result,
+                        jobPhotos: viewModel.images,
                         selectedTier: $viewModel.selectedTier,
                         onDismiss: { showFullQuote = false },
                         onQuoteSaved: { tier, quote in

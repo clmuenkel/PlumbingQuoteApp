@@ -1,7 +1,9 @@
 import SwiftUI
+import MessageUI
 
 struct QuoteResultView: View {
     let result: QuoteResult
+    var jobPhotos: [UIImage] = []
     @Binding var selectedTier: QuoteTier
     let onDismiss: () -> Void
     var onQuoteSaved: ((QuoteTier, Quote) -> Void)? = nil
@@ -9,6 +11,7 @@ struct QuoteResultView: View {
     @State private var showShareSheet = false
     @State private var shareItems: [Any] = []
     @State private var showBreakdown = false
+    @State private var showComparison = false
     @State private var estimateStatus: EstimateStatus = .draft
     @State private var statusError: String?
     @State private var isUpdatingStatus = false
@@ -17,6 +20,9 @@ struct QuoteResultView: View {
     @State private var signatureImage: UIImage?
     @State private var showEditQuote = false
     @State private var quoteOverrides: [QuoteTier: Quote] = [:]
+    @State private var showMessageComposer = false
+    @State private var showMailComposer = false
+    @State private var deliveryDraft: DeliveryDraft?
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
@@ -41,6 +47,10 @@ struct QuoteResultView: View {
                     tierCard(for: .better)
                     tierCard(for: .best)
                     pricingIntelligenceCard(for: quote(for: selectedTier))
+
+                    if showComparison {
+                        comparisonCard
+                    }
 
                     if showBreakdown {
                         quoteBreakdownCard(for: quote(for: selectedTier))
@@ -78,6 +88,33 @@ struct QuoteResultView: View {
             }
             .sheet(isPresented: $showShareSheet) {
                 ShareSheet(items: shareItems)
+            }
+            .sheet(isPresented: $showMessageComposer) {
+                if let draft = deliveryDraft {
+                    MessageComposer(
+                        recipients: draft.phone.map { [$0] } ?? [],
+                        body: draft.body,
+                        attachmentData: draft.pdfData,
+                        attachmentName: draft.fileName
+                    )
+                } else {
+                    Text("Could not prepare SMS.")
+                        .padding()
+                }
+            }
+            .sheet(isPresented: $showMailComposer) {
+                if let draft = deliveryDraft {
+                    MailComposer(
+                        subject: draft.subject,
+                        recipients: draft.email.map { [$0] } ?? [],
+                        body: draft.body,
+                        attachmentData: draft.pdfData,
+                        attachmentName: draft.fileName
+                    )
+                } else {
+                    Text("Could not prepare email.")
+                        .padding()
+                }
             }
             .sheet(isPresented: $showSignaturePad) {
                 SignaturePadView(
@@ -145,6 +182,12 @@ struct QuoteResultView: View {
 
             if let customerName = result.customerName, !customerName.isEmpty {
                 Text("Customer: \(customerName)")
+                    .font(.caption)
+                    .foregroundStyle(AppTheme.muted)
+            }
+
+            if let customerEmail = result.customerEmail, !customerEmail.isEmpty {
+                Text("Email: \(customerEmail)")
                     .font(.caption)
                     .foregroundStyle(AppTheme.muted)
             }
@@ -393,7 +436,9 @@ struct QuoteResultView: View {
                 if estimateStatus == .sent {
                     rejectButton
                 }
+                contactActionButtons
                 editQuoteButton
+                comparisonButton
                 breakdownButton
             }
         }
@@ -436,6 +481,45 @@ struct QuoteResultView: View {
         .buttonStyle(.plain)
     }
 
+    @ViewBuilder
+    private var contactActionButtons: some View {
+        if MFMessageComposeViewController.canSendText() {
+            Button {
+                sendViaText()
+            } label: {
+                Label("Text Customer", systemImage: "message")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(AppTheme.text)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.85)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .frame(minHeight: 44)
+                    .padding(.horizontal, 12)
+                    .background(AppTheme.surface)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
+            .buttonStyle(.plain)
+        }
+
+        if MFMailComposeViewController.canSendMail() {
+            Button {
+                sendViaEmail()
+            } label: {
+                Label("Email Quote", systemImage: "envelope")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(AppTheme.text)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.85)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .frame(minHeight: 44)
+                    .padding(.horizontal, 12)
+                    .background(AppTheme.surface)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
     private var breakdownButton: some View {
         Button {
             withAnimation {
@@ -457,6 +541,95 @@ struct QuoteResultView: View {
             .clipShape(RoundedRectangle(cornerRadius: 12))
         }
         .buttonStyle(.plain)
+    }
+
+    private var comparisonButton: some View {
+        Button {
+            withAnimation {
+                showComparison.toggle()
+            }
+        } label: {
+            Label(
+                showComparison ? "Hide Comparison" : "Compare Options",
+                systemImage: "rectangle.split.3x1"
+            )
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(AppTheme.text)
+            .lineLimit(1)
+            .minimumScaleFactor(0.85)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(minHeight: 44)
+            .padding(.horizontal, 12)
+            .background(AppTheme.surface)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var comparisonCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Side-by-Side Comparison")
+                .font(.headline)
+            comparisonMetricRow(title: "Total", values: [
+                CurrencyFormatter.usd(quote(for: .good).computedTotal),
+                CurrencyFormatter.usd(quote(for: .better).computedTotal),
+                CurrencyFormatter.usd(quote(for: .best).computedTotal)
+            ])
+            comparisonMetricRow(title: "Warranty", values: [
+                "\(quote(for: .good).warrantyMonths) mo",
+                "\(quote(for: .better).warrantyMonths) mo",
+                "\(quote(for: .best).warrantyMonths) mo"
+            ])
+            comparisonMetricRow(title: "Labor Hours", values: [
+                String(format: "%.1f", quote(for: .good).laborHours),
+                String(format: "%.1f", quote(for: .better).laborHours),
+                String(format: "%.1f", quote(for: .best).laborHours)
+            ])
+
+            Divider()
+
+            Text("What you get")
+                .font(.subheadline.weight(.semibold))
+            Text("Better adds: \(deltaSummary(from: quote(for: .good), to: quote(for: .better)))")
+                .font(.caption)
+                .foregroundStyle(AppTheme.muted)
+            Text("Best adds: \(deltaSummary(from: quote(for: .better), to: quote(for: .best)))")
+                .font(.caption)
+                .foregroundStyle(AppTheme.muted)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(14)
+        .background(AppTheme.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .shadow(color: .black.opacity(0.05), radius: 4, y: 1)
+    }
+
+    private func comparisonMetricRow(title: String, values: [String]) -> some View {
+        HStack {
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .frame(width: 90, alignment: .leading)
+            Text("Good: \(values[0])")
+                .font(.caption)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            Text("Better: \(values[1])")
+                .font(.caption)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            Text("Best: \(values[2])")
+                .font(.caption)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    private func deltaSummary(from base: Quote, to upgraded: Quote) -> String {
+        let baseItems = Set(base.lineItems.map { $0.partName.lowercased() })
+        let added = upgraded.lineItems
+            .map { $0.partName }
+            .filter { !baseItems.contains($0.lowercased()) }
+        if added.isEmpty {
+            return "expanded labor scope and upgraded warranty."
+        }
+        return added.prefix(3).joined(separator: ", ") + (added.count > 3 ? ", and more." : ".")
     }
 
     private var isCompactWidth: Bool {
@@ -496,18 +669,70 @@ Warranty: \(quote.warrantyMonths) months
 """
     }
 
+    private func sendViaText() {
+        guard let phone = result.customerPhone, !phone.isEmpty else {
+            statusError = "Add a customer phone number before sending text."
+            return
+        }
+        guard MFMessageComposeViewController.canSendText() else {
+            statusError = "Text messaging is not available on this device."
+            return
+        }
+        guard let draft = prepareDeliveryDraft() else { return }
+        deliveryDraft = DeliveryDraft(
+            pdfData: draft.pdfData,
+            fileName: draft.fileName,
+            body: draft.body,
+            subject: draft.subject,
+            phone: phone,
+            email: draft.email
+        )
+        showMessageComposer = true
+    }
+
+    private func sendViaEmail() {
+        guard let email = result.customerEmail, !email.isEmpty else {
+            statusError = "Add a customer email before sending."
+            return
+        }
+        guard MFMailComposeViewController.canSendMail() else {
+            statusError = "Mail is not configured on this device."
+            return
+        }
+        guard var draft = prepareDeliveryDraft() else { return }
+        draft.email = email
+        deliveryDraft = draft
+        showMailComposer = true
+    }
+
     private func prepareAndSharePDF() {
+        guard let draft = prepareDeliveryDraft() else { return }
+        shareItems = [draft.fileURL]
+        showShareSheet = true
+    }
+
+    private func prepareDeliveryDraft() -> DeliveryDraft? {
         do {
             let rendered = try PDFQuoteRenderer.render(
                 result: result,
                 tier: selectedTier,
                 companyInfo: companyInfo,
-                signature: signatureImage
+                signature: signatureImage,
+                jobPhotos: jobPhotos
             )
-            shareItems = [rendered.url]
-            showShareSheet = true
+            let quoteNumber = result.estimateNumber.map { String(format: "#%03d", $0) } ?? "#000"
+            return DeliveryDraft(
+                pdfData: rendered.data,
+                fileName: rendered.url.lastPathComponent,
+                body: "Here is your plumbing estimate \(quoteNumber) from \(companyInfo.name).",
+                subject: "Your Plumbing Estimate \(quoteNumber)",
+                phone: result.customerPhone,
+                email: result.customerEmail,
+                fileURL: rendered.url
+            )
         } catch {
             statusError = "Could not generate PDF: \(error.localizedDescription)"
+            return nil
         }
     }
 
@@ -586,6 +811,38 @@ private struct EstimateStatusRow: Decodable {
     let status: String
 }
 
+private struct DeliveryDraft {
+    let pdfData: Data
+    let fileName: String
+    let body: String
+    let subject: String
+    let phone: String?
+    var email: String?
+    let fileURL: URL
+
+    init(
+        pdfData: Data,
+        fileName: String,
+        body: String,
+        subject: String,
+        phone: String?,
+        email: String?,
+        fileURL: URL? = nil
+    ) {
+        self.pdfData = pdfData
+        self.fileName = fileName
+        self.body = body
+        self.subject = subject
+        self.phone = phone
+        self.email = email
+        if let fileURL {
+            self.fileURL = fileURL
+        } else {
+            self.fileURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
+        }
+    }
+}
+
 // MARK: - Share Sheet
 struct ShareSheet: UIViewControllerRepresentable {
     let items: [Any]
@@ -595,6 +852,91 @@ struct ShareSheet: UIViewControllerRepresentable {
     }
     
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+}
+
+struct MessageComposer: UIViewControllerRepresentable {
+    let recipients: [String]
+    let body: String
+    let attachmentData: Data
+    let attachmentName: String
+    @Environment(\.dismiss) private var dismiss
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(dismiss: dismiss)
+    }
+
+    func makeUIViewController(context: Context) -> MFMessageComposeViewController {
+        let controller = MFMessageComposeViewController()
+        controller.messageComposeDelegate = context.coordinator
+        controller.recipients = recipients
+        controller.body = body
+        if MFMessageComposeViewController.canSendAttachments() {
+            controller.addAttachmentData(
+                attachmentData,
+                typeIdentifier: "com.adobe.pdf",
+                filename: attachmentName
+            )
+        }
+        return controller
+    }
+
+    func updateUIViewController(_ uiViewController: MFMessageComposeViewController, context: Context) {}
+
+    final class Coordinator: NSObject, MFMessageComposeViewControllerDelegate {
+        private let dismissAction: DismissAction
+
+        init(dismiss: DismissAction) {
+            self.dismissAction = dismiss
+        }
+
+        func messageComposeViewController(
+            _ controller: MFMessageComposeViewController,
+            didFinishWith result: MessageComposeResult
+        ) {
+            dismissAction()
+        }
+    }
+}
+
+struct MailComposer: UIViewControllerRepresentable {
+    let subject: String
+    let recipients: [String]
+    let body: String
+    let attachmentData: Data
+    let attachmentName: String
+    @Environment(\.dismiss) private var dismiss
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(dismiss: dismiss)
+    }
+
+    func makeUIViewController(context: Context) -> MFMailComposeViewController {
+        let controller = MFMailComposeViewController()
+        controller.mailComposeDelegate = context.coordinator
+        controller.setSubject(subject)
+        controller.setToRecipients(recipients)
+        controller.setMessageBody(body, isHTML: false)
+        controller.addAttachmentData(attachmentData, mimeType: "application/pdf", fileName: attachmentName)
+        return controller
+    }
+
+    func updateUIViewController(_ uiViewController: MFMailComposeViewController, context: Context) {}
+
+    final class Coordinator: NSObject, MFMailComposeViewControllerDelegate {
+        private let dismissAction: DismissAction
+
+        init(dismiss: DismissAction) {
+            self.dismissAction = dismiss
+        }
+
+        func mailComposeController(
+            _ controller: MFMailComposeViewController,
+            didFinishWith result: MFMailComposeResult,
+            error: Error?
+        ) {
+            dismissAction()
+        }
+    }
 }
 
 #Preview {

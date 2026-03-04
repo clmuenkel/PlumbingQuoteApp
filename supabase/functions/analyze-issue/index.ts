@@ -12,6 +12,7 @@ type AnalyzeRequest = {
   additionalNotes?: string;
   customerName?: string;
   customerPhone?: string;
+  customerEmail?: string;
   customerAddress?: string;
   allowOverride?: boolean;
 };
@@ -1187,7 +1188,7 @@ Deno.serve(async (req) => {
       id: customerId,
       firstName: body.customerName?.split(" ")[0] ?? "On-Site",
       lastName: body.customerName?.split(" ").slice(1).join(" ") || "Customer",
-      email: null,
+      email: body.customerEmail ?? null,
       phone: body.customerPhone ?? null,
       address: body.customerAddress ?? null,
       city: null,
@@ -1380,6 +1381,7 @@ Deno.serve(async (req) => {
       },
       customerName: body.customerName ?? null,
       customerPhone: body.customerPhone ?? null,
+      customerEmail: body.customerEmail ?? null,
       customerAddress: body.customerAddress ?? null,
       imagePaths: uploadedPaths,
       failedUploads,

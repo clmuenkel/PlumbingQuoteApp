@@ -80,6 +80,7 @@ final class AIQuoteService: ObservableObject {
         additionalNotes: String?,
         customerName: String?,
         customerPhone: String?,
+        customerEmail: String?,
         customerAddress: String?,
         allowOverride: Bool = false
     ) async -> QuoteResult? {
@@ -115,6 +116,7 @@ final class AIQuoteService: ObservableObject {
             let additionalNotes: String?
             let customerName: String?
             let customerPhone: String?
+            let customerEmail: String?
             let customerAddress: String?
             let allowOverride: Bool?
         }
@@ -127,6 +129,7 @@ final class AIQuoteService: ObservableObject {
             additionalNotes: additionalNotes,
             customerName: customerName,
             customerPhone: customerPhone,
+            customerEmail: customerEmail,
             customerAddress: customerAddress,
             allowOverride: allowOverride ? true : nil
         )

@@ -27,8 +27,11 @@ final class AnalyticsViewModel: ObservableObject {
         let accepted: Int
         let sent: Int
         let rejected: Int
+        let viewed: Int
         let avgQuoteValue: Double
         let acceptedRevenue: Double
+        let pendingSentValue: Double
+        let projectedRevenue: Double
     }
 
     struct CategoryStat: Identifiable {
@@ -94,8 +97,11 @@ final class AnalyticsViewModel: ObservableObject {
                     accepted: row.accepted ?? 0,
                     sent: row.sent ?? 0,
                     rejected: row.rejected ?? 0,
+                    viewed: row.viewed ?? 0,
                     avgQuoteValue: row.avg_quote_value ?? 0,
-                    acceptedRevenue: row.accepted_revenue ?? 0
+                    acceptedRevenue: row.accepted_revenue ?? 0,
+                    pendingSentValue: row.pending_sent_value ?? 0,
+                    projectedRevenue: row.projected_revenue ?? 0
                 )
             }
 
@@ -139,8 +145,11 @@ private struct DailyRow: Decodable {
     let accepted: Int?
     let sent: Int?
     let rejected: Int?
+    let viewed: Int?
     let avg_quote_value: Double?
     let accepted_revenue: Double?
+    let pending_sent_value: Double?
+    let projected_revenue: Double?
 
     var dateValue: Date? {
         guard let quote_date else { return nil }

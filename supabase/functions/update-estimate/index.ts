@@ -8,6 +8,7 @@ type UpdateEstimateRequest = {
   status: EstimateStatus;
   selectedOptionId?: string;
   signatureBase64?: string;
+  markViewed?: boolean;
 };
 
 const CORS_METHODS = "PATCH, OPTIONS";
@@ -134,6 +135,7 @@ Deno.serve(async (req) => {
     };
     if (body.status === "sent") payload.sentAt = now;
     if (body.status === "accepted") payload.signedAt = now;
+    if (body.markViewed) payload.viewedAt = now;
     if (signaturePath) {
       payload.internalNote = `Signature captured: quote-images:${signaturePath}`;
     }

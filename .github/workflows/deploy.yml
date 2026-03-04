@@ -1,0 +1,64 @@
+name: Deploy TestFlight
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  deploy-testflight:
+    runs-on: macos-15
+    env:
+      APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+      APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
+      APPLE_API_PRIVATE_KEY: ${{ secrets.APPLE_API_PRIVATE_KEY }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate Project
+        run: xcodegen generate
+      - name: Install signing assets
+        uses: apple-actions/import-codesign-certs@v3
+        with:
+          p12-file-base64: ${{ secrets.IOS_DIST_P12_BASE64 }}
+          p12-password: ${{ secrets.IOS_DIST_P12_PASSWORD }}
+      - name: Build Archive
+        run: |
+          xcodebuild \
+            -project PlumbingQuoteApp.xcodeproj \
+            -scheme PlumbingQuoteApp \
+            -configuration Release \
+            -archivePath build/PlumbingQuoteApp.xcarchive \
+            -allowProvisioningUpdates \
+            archive
+      - name: Export IPA
+        run: |
+          cat <<'EOF' > ExportOptions.plist
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store</string>
+            <key>signingStyle</key>
+            <string>automatic</string>
+            <key>teamID</key>
+            <string>${APPLE_TEAM_ID}</string>
+            <key>uploadSymbols</key>
+            <true/>
+          </dict>
+          </plist>
+          EOF
+          xcodebuild -exportArchive \
+            -archivePath build/PlumbingQuoteApp.xcarchive \
+            -exportPath build \
+            -exportOptionsPlist ExportOptions.plist
+      - name: Upload to TestFlight
+        uses: apple-actions/upload-testflight-build@v1
+        with:
+          app-path: build/PlumbingQuoteApp.ipa
+          issuer-id: ${{ secrets.APPLE_API_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPLE_API_KEY_ID }}
+          api-private-key: ${{ secrets.APPLE_API_PRIVATE_KEY }}

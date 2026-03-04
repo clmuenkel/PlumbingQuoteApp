@@ -75,6 +75,7 @@ Apply:
 9. `supabase/migrations/009_parts_catalog_competitor_vectors.sql`
 10. `supabase/migrations/010_brooks_plumbing_tuning.sql`
 11. `supabase/migrations/011_production_security_hardening.sql`
+12. `supabase/migrations/012_quote_lifecycle_and_projection.sql`
 
 ### 6) Deploy Edge Function
 
@@ -84,3 +85,23 @@ Deploy:
 - `supabase/functions/update-estimate`
 - `supabase/functions/update-estimate-options`
 - `supabase/functions/refresh-competitor-pricing`
+- `supabase/functions/import-price-book`
+
+### 7) Weekly Pricing Automation (GitHub Actions)
+
+This repository includes `.github/workflows/refresh-pricing.yml` to run every Monday:
+
+- Calls `refresh-competitor-pricing` edge function
+- Runs `scripts/scrape_parts_homedepot.py`
+- Runs `scripts/scrape_parts_lowes.py`
+
+Required GitHub repository secrets:
+
+- `SUPABASE_FUNCTION_REFRESH_URL` (full function invoke URL)
+- `REFRESH_COMPETITOR_PRICING_SECRET`
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `OPENAI_API_KEY`
+- `ANTHROPIC_API_KEY`
+- `FIRECRAWL_API_KEY`
+- `TAVILY_API_KEY`
