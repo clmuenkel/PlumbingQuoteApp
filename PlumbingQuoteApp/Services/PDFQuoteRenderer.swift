@@ -95,7 +95,7 @@ enum PDFQuoteRenderer {
             ) -> CGFloat {
                 let attrs: [NSAttributedString.Key: Any] = [.font: font, .foregroundColor: color]
                 let box = NSString(string: text).boundingRect(
-                    with: CGSize(width: width, height: .greatestFiniteMagnitude),
+                    with: CGSize(width: width, height: CGFloat.greatestFiniteMagnitude),
                     options: [.usesLineFragmentOrigin, .usesFontLeading],
                     attributes: attrs,
                     context: nil
@@ -156,7 +156,7 @@ enum PDFQuoteRenderer {
                 let itemText = item.partName + (item.brand.isEmpty ? "" : " - \(item.brand)")
                 let attrs: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 11)]
                 let itemHeight = ceil(NSString(string: itemText).boundingRect(
-                    with: CGSize(width: 250, height: .greatestFiniteMagnitude),
+                    with: CGSize(width: 250, height: CGFloat.greatestFiniteMagnitude),
                     options: [.usesLineFragmentOrigin, .usesFontLeading],
                     attributes: attrs,
                     context: nil
@@ -241,7 +241,7 @@ enum PDFQuoteRenderer {
 
         let fileName = "PlumbQuote-\(result.estimateNumber ?? 0)-\(tier.rawValue).pdf"
         let url = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
-        try data.write(to: url, options: .atomic)
+        try data.write(to: url, options: Data.WritingOptions.atomic)
         return (data, url)
     }
 
